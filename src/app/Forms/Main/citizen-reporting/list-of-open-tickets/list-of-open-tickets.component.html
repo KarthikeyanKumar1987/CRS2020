@@ -1,0 +1,85 @@
+<!-- <div id="content">
+  <div class="row">
+    <article class="col-sm-12 col-md-12 col-lg-12" style="margin-top: -10px;">
+      <div sa-widget [colorbutton]="false" [editbutton]="false" [custombutton]="false" color="blueDark"
+        style="margin-bottom: 0px !important;">
+        <div>
+          <div class="widget-body">
+            <div class="lightest-gray-bg" *ngIf="isHeaderList">
+
+              <div class="customNgxMainGrid">
+                <ngx-datatable *ngIf="IsGroupingEnable" [style.pointer-events]="IsHeadListEnable ? 'none' : 'auto'"
+                  #table class="table table-bordered ngxCustomCss" [rows]="rowsHead"
+                  [loadingIndicator]="loadingIndicator" [columnMode]="'force'" [headerHeight]="70" [footerHeight]="45"
+                  [rowHeight]="'auto'" [rowClass]="rowClass" [limit]="controls.pageSize" [cssClasses]="{
+                              sortAscending: 'fa fa-caret-up',
+                              sortDescending: 'fa fa-caret-down',
+                              pagerLeftArrow: 'fa fa-angle-left',
+                              pagerRightArrow: 'fa fa-angle-right',
+                              pagerPrevious: 'fa fa-angle-double-left',
+                              pagerNext: 'fa fa-angle-double-right'
+                              }" [messages]="{emptyMessage: 'No data to display'}" [reorderable]="reorderable"
+                  [externalPaging]="true" [count]="SRDpagination.TotalItems" [offset]="SRDpagination.PageNumber"
+                  [limit]="limit" [selectionType]="'single'" [selected]="selected" (activate)='onActivateHead($event)'
+                  (page)='setPage($event)' style="cursor:pointer;"  
+                   >
+
+
+                  <ngx-datatable-column name="SRD No." prop="RetNo" editable="true">
+                    <ng-template #sortableColumnTemplate let-sort="sortFn" let-column="column"
+                      ngx-datatable-header-template>
+                      <div class="icon-addon">
+                        <input type="text" id="search" class="form-control search" name="RetNo" placeholder='SRD No.'
+                          (keyup)='updateFilter($event)' [(ngModel)]="SRDHeadFilter.RetNo">
+                        <label style="z-index: 22" for="search" class="fa fa-filter" rel="tooltip"
+                          title="search"></label>
+                      </div>
+                      <span (click)="sort()" class="sort-fullwidth">{{column?.name}}</span>
+                    </ng-template>
+                  </ngx-datatable-column>
+                   
+                  <ngx-datatable-footer>
+                    <ng-template ngx-datatable-footer-template let-rowCount="rowCount" let-pageSize="pageSize"
+                      let-selectedCount="SRDpagination.PageNumber" let-curPage="curPage" let-offset="offset">
+                      <div class="row" style="width: 100%">
+                        <div class="col-md-5">
+                          <div class="dataTables_info" id="DataTables_Table_5_info" role="status" aria-live="polite"
+                            style="padding-left: 15px; width: 100%; padding-top: 12px;"> Showing
+                            {{SRDpagination.StartPageNo}}
+                            to {{SRDpagination.EndPageNo}} of
+                            {{SRDpagination.TotalItems}} entries</div>
+                        </div>
+                        <div class="col-md-7" style="padding-right: 0px; padding-top: 6px;">
+                          <datatable-pager [pagerLeftArrowIcon]="'fa  fa-angle-left'"
+                            [pagerRightArrowIcon]="'fa fa-angle-right'" [pagerPreviousIcon]="'fa fa-angle-double-left'"
+                            [pagerNextIcon]="'fa fa-angle-double-right'" [page]="curPage" [size]="pageSize"
+                            [count]="rowCount" [hidden]="!((rowCount / pageSize) > 1)" (change)="setPage($event)"
+                            style="float: right;padding: 0px !important">
+                          </datatable-pager>
+                          <select class="pull-right form-control" style="width: 70px; margin: 0px 2px 0px 2px;"
+                            (ngModelChange)="updatePageSize($event)" [(ngModel)]="controls.pageSize">
+                            <option>50</option>
+                            <option>100</option>
+                            <option>250</option>
+                            <option>500</option>
+                          </select>
+                          <select id="groupingdd" class="pull-right form-control" style="width: 200px;"
+                            [(ngModel)]="groupingColumn" (change)="onGroupColumnChange($event.target.value)">
+                            <option *ngFor="let item of groupingColumnList" [value]="item.key">{{item.value}}</option>
+                          </select>
+                        </div>
+                      </div>
+                    </ng-template>
+                  </ngx-datatable-footer>
+                </ngx-datatable>
+
+              
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+  </div>
+</div> -->

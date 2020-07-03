@@ -1,0 +1,489 @@
+<!doctype html>
+<html>
+
+<head>
+    <script src="https://code.jquery.com/jquery-3.4.1.js"
+        integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+    <script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+</head>
+
+<style>
+    table {
+        border-collapse: collapse;
+        position: absolute;
+        height: 100%;
+        /* width: auto; */
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    }
+
+    td,
+    th {
+        width: 100px;
+        text-align: center;
+        height: 45px;
+        /* width: 150px; */
+        border: 1px solid #474747;
+        /* padding: 5px; */
+        background-color: gainsboro;
+    }
+
+    #right_table td {
+        text-align: initial !important;
+    }
+
+    tbody td {
+        background-color: white;
+        /* border: 1px solid #474747; */
+        white-space: nowrap;
+    }
+
+    td.locked_left,
+    th.locked_left {
+        width: 25%;
+        white-space: normal;
+        font-size: 15px;
+        /* background-color: #88ff88; */
+    }
+
+    td.locked_right,
+    th.locked_right {
+        min-width: 74px;
+        max-width: 74px;
+    }
+
+    .remarksCol {
+        /* white-space: normal; */
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    #table_container_left {
+        width: 25%;
+        height: auto;
+        position: relative;
+        float: left;
+        /* overflow: hidden; */
+        margin-left: 4px;
+    }
+
+    #table_container_right {
+        width: 75%;
+        height: auto;
+        /* overflow: hidden; */
+        float: right;
+        position: relative;
+        margin-left: -2px;
+        /* By Moorthi */
+    }
+
+    .tooltip {
+        position: relative;
+        display: inline-block;
+        /* border-bottom: 1px dotted black; */
+    }
+
+    .tooltip .tooltiptext {
+        visibility: hidden;
+        background-color: lightgray;
+        color: black;
+        text-align: center;
+        border-radius: 6px;
+        /* padding: 5px 0; */
+        position: absolute;
+        z-index: 1;
+        visibility: visible;
+        width: 125px;
+        bottom: 20px;
+        left: 75%;
+        margin-left: -60px;
+        text-align: center;
+        font-size: 13px;
+        /* font-weight: bold; */
+    }
+
+    .tooltip .tooltiptext1 {
+        visibility: hidden;
+        background-color: lightgray;
+        color: black;
+        text-align: center;
+        border-radius: 6px;
+        /* padding: 5px 0; */
+        position: absolute;
+        z-index: 1;
+        visibility: visible;
+        width: 125px;
+        bottom: 20px;
+        left: 75%;
+        margin-left: -128px;
+        text-align: center;
+        font-size: 13px;
+        /* font-weight: bold; */
+    }
+
+    .tooltip .tooltiptext2 {
+        visibility: hidden;
+        background-color: lightgray;
+        color: black;
+        text-align: center;
+        border-radius: 6px;
+        /* padding: 5px 0; */
+        position: absolute;
+        z-index: 1;
+        visibility: visible;
+        width: 48px;
+        bottom: 20px;
+        left: 20px;
+        margin-left: -60px;
+        text-align: center;
+        font-size: 13px;
+        /* font-weight: bold; */
+    }
+
+    @media print {
+        table {
+            font-size: 14px;
+        }
+    }
+
+    @media print {
+        body {
+            transform: scale(.7);
+            margin-left: -100px;
+        }
+
+        /* table {
+      page-break-inside: avoid;
+    } */
+    }
+
+    /* @media only print {
+    #table_container_left {
+      width: auto;
+      height: auto;
+      overflow: visible;
+    }
+  } */
+
+    #overFlowDot {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        width: 500px;
+        display: inline-block;
+    }
+</style>
+<script type="text/javascript">
+
+    var drawTable = ' <div id="table_container_left"><table id="left_table"><thead><tr><th class="locked_left">Project Activity</th><th class="locked_left">Sub Activity</th><th class="locked_left">P/A</th></tr></thead>';
+    var rowCount = 0;
+    var dataObject;
+    var endPointURL;
+    var api_url;
+    var selectedProjectId;
+
+    $(function () {
+        selectedProjectId = "";
+        // var urlParams = window.location.search.replace("?", '').split('&');
+        // selectedProjectId = urlParams[0].replace('projectId=', '');
+        // endPointURL = urlParams[1].replace('endPointUrl=', '');
+        selectedProjectId = "1770"
+        endPointURL = "http://localhost:32599/"
+        var url = endPointURL + 'api/ActivityBarChart/ProjectActivityDetailsBeta/' + selectedProjectId;
+        api_url = url;
+        if (selectedProjectId) {
+            getData();
+            generateTable(dataObject);
+            generateMonthlyReport();
+        }
+    });
+
+    function getData() {
+        $.ajax({
+            async: false,
+            url: api_url,
+            contentType: "application/json",
+            dataType: 'json',
+            success: function (result, status, request) {
+                dataObject = result;
+            },
+            error: function (result, status, request) {
+            }
+        });
+    }
+
+    function generateTable(dataObject) { //data is the parsed JSON Object from an ajax request
+        $("#TimelineSecOne tbody").empty();//Empty the table first   
+        $.each(dataObject.ResultKey, function (key, elem) {
+            var baseHtml = "";
+            var childrenHtml = "";
+            var maxRowSpan = 0;
+            $.each(elem, function (index, inner_elem) {
+                // var innerElemKey = Object.keys(inner_elem)[0];
+                var innerElemKey = inner_elem.Key;
+                // var arr = inner_elem[innerElemKey];
+                var arr = inner_elem.Value;
+                var elemRowSpan = arr.length;
+                maxRowSpan += arr.length;
+
+                if (index === 0) {
+                    childrenHtml += ('<td class="locked_left" rowspan="' + elemRowSpan + '">' + innerElemKey + '</td>');
+                    $.each(arr, function (indx, child) {
+                        if (indx === 0) {
+                            childrenHtml += ('<td class="locked_left" rowspan="1">' + child + '</td>' + '</tr>');
+                        }
+                        else {
+                            childrenHtml += ('<tr><td class="locked_left" rowspan="1">' + child + '</td>' + '</tr>');
+                            rowCount++;
+                        }
+                    });
+                }
+                else {
+                    childrenHtml += ('<tr><td class="locked_left" rowspan="' + elemRowSpan + '">' + innerElemKey + '</td>');
+                    rowCount++;
+                    // var queryObject = _.countBy(arr);
+                    $.each(arr, function (indx, child) {
+                        if (indx === 0) {
+                            childrenHtml += ('<td class="locked_left" rowspan="1">' + child + '</td>' + '</tr>');
+                        }
+                        else {
+                            childrenHtml += ('<tr><td class="locked_left" rowspan="1">' + child + '</td>' + '</tr>');
+                            rowCount++;
+                        }
+                    });
+                }
+            });
+            baseHtml += ('<tr><td class="locked_left" rowspan="' + maxRowSpan + '">' + key + '</td>');
+            rowCount++;
+            var test = '<tr><td class="locked_left" rowspan="2">sub 1</td><td class="locked_left" rowspan="1">Plan</td></tr><tr><td class="locked_left" rowspan="1">Actual</td></tr><tr><td rowspan="2">sub 2</td><td rowspan="1">Plan</td></tr><tr><td rowspan="1">Actual</td></tr>'
+            drawTable += baseHtml + childrenHtml;
+
+        });
+        drawTable += '</table></div>'
+    }
+
+    function generateMonthlyReport() {
+        var weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        let typeofKey;
+        let x = 1;
+        let y = 0;
+        let trInc = 0;
+        drawTable += '<div id="table_container_right"><table id = "right_table">';
+        drawTable += "<thead>";
+        drawTable += "<tr>";
+
+        // Get Minimum / Max Date from a Array by Loop
+        var dates = [];
+        var datesMax = [];
+        for (i = 0; i < dataObject.ResultValue.length; i++) {
+            var mydate = dataObject.ResultValue[i].DateFrom.split("-").reverse().join("/");
+            mydate != "" ? dates.push(new Date(mydate)) : '';
+            var mydateMax = dataObject.ResultValue[i].DateTo.split("-").reverse().join("/");
+            mydateMax != "" ? datesMax.push(new Date(mydateMax)) : '';
+        }
+        var minimumDate = new Date(Math.min.apply(null, dates));
+        var maximumDate = new Date(Math.max.apply(null, dates));
+        // let today = new Date();
+        let dd = minimumDate.getDate();
+        let mm = minimumDate.getMonth() + 1; //January is 0!
+        let yyyy = minimumDate.getFullYear();
+        let nextWeek = (minimumDate.getDate() + 10) + 10;
+        // let formatedDate = yyyy.toString() + mm.toString() + dd.toString();
+
+        var ColLastMonth = maximumDate.getMonth();
+        var ColLastYear = maximumDate.getFullYear();
+        var ColLastMonthString = monthNames[ColLastMonth - 1].substring(0, 3) + ' ' + ColLastYear;
+
+        let colCount = 0;
+        var finalMonth;
+
+        // From Min Date from 12 Months Column Generation 
+        for (var i = 0; i < 12; i++) {
+            var day = new Date(yyyy, mm + i, 0);
+            var month = monthNames[day.getMonth()];
+            var year = day.getFullYear();
+            finalMonth = month.substring(0, 3) + ' ' + year;
+            drawTable += "<th class='locked_right' id = days" + x + '-' + y + ">" + finalMonth + "</th>";
+            colCount++;
+        }
+        drawTable += "<th class='locked_right'>Remarks</th>";
+        colCount++;
+        drawTable += "</tr>";
+        drawTable += "</thead>";
+        drawTable += '<tbody class="dragscroll">';
+        x = 0;
+        y = 1;
+        // counter for the main table
+        let z = 1;
+        drawTable += '<tr>';
+        var noRows = rowCount;
+        for (; noRows >= 1; noRows--) {
+            // rows and cols of the main table and date
+            for (let j = 0; j < colCount; j++) {
+                if (colCount - 1 == j) {
+                    drawTable += "<td class='locked_right remarksCol' style='text-align: center!important'> </td>";
+                } else {
+                    drawTable += "<td class='locked_right' > </td>";
+                }
+                z++;
+            }
+            // set z to one to start the main tables x at 1 for off by one error
+            z = 1;
+            //reset x for each row
+            x = 0;
+            drawTable += '</tr>';
+            y++;
+        }
+        drawTable += "</tbody>";
+        drawTable += "</table></div>";
+        // document.write(drawTable);
+        $("#appendTable").append(drawTable);
+        getData();
+
+        function getData() {
+            let typeofKey;
+            let myTable = document.getElementById('right_table');
+            let colFill = false;
+            let color = null;
+            // color = getRandomColor();
+            color = "darkslategrey"
+
+            var startdate = "";
+            var startmonth = "";
+            var startyear = "";
+            var startday = "";
+            var startmonthStr = "";
+            var plannedDateFrom = "";
+
+            var enddate = "";
+            var endmonth = "";
+            var endyear = "";
+            var endday = "";
+            var endmonthStr = "";
+            var plannedDateTo = "";
+
+            var colorWidth = 0;
+            var colorMarginLeft = 0;
+
+            for (let row = 0; row < dataObject.ResultValue.length; row++) {
+                for (let col = 0; col < myTable.rows[0].cells.length; col++) {
+                    // Update Remarks Value
+                    if (myTable.rows[0].cells[col].innerHTML == "Remarks") {
+                        myTable.rows[row + 1].cells[col].textContent = dataObject.ResultValue[row].Remarks;
+                    }
+                }
+            }
+
+            for (let row = 0; row < dataObject.ResultValue.length; row++) {
+                for (let col = 0; col < myTable.rows[0].cells.length; col++) {
+                    var keyNameFrom = Object.keys(dataObject.ResultValue[row])[0];
+                    var keyNameTo = Object.keys(dataObject.ResultValue[row])[1];
+
+                    if (dataObject.ResultValue[row][keyNameFrom] && dataObject.ResultValue[row][keyNameTo]) {
+                        startdate = parseInt(dataObject.ResultValue[row][keyNameFrom].split('-')[0]);
+                        startmonth = parseInt(dataObject.ResultValue[row][keyNameFrom].split('-')[1]);
+                        startyear = parseInt(dataObject.ResultValue[row][keyNameFrom].split('-')[2]);
+                        startday = new Date(startyear, startmonth, 0);
+                        startmonthStr = monthNames[startday.getMonth()];
+                        plannedDateFrom = startmonthStr.substring(0, 3) + ' ' + startyear;
+
+                        enddate = parseInt(dataObject.ResultValue[row][keyNameTo].split('-')[0]);
+                        endmonth = parseInt(dataObject.ResultValue[row][keyNameTo].split('-')[1]);
+                        endyear = parseInt(dataObject.ResultValue[row][keyNameTo].split('-')[2]);
+                        endday = new Date(endyear, endmonth, 0);
+                        endmonthStr = monthNames[endday.getMonth()];
+                        plannedDateTo = endmonthStr.substring(0, 3) + ' ' + endyear;
+
+                        var lastDayOfStartMonth = new Date(startday.getFullYear(), startday.getMonth() + 1, 0);
+                        lastDayOfStartMonth = lastDayOfStartMonth.getDate();
+                        var lastDayOfEndMonth = new Date(endday.getFullYear(), endday.getMonth() + 1, 0);
+                        lastDayOfEndMonth = lastDayOfEndMonth.getDate();
+
+                        //Leap Year Based Chart Implement
+                        if (lastDayOfStartMonth == 28) {
+                            lastDayOfStartMonth = lastDayOfStartMonth + 3;
+                        } else if (lastDayOfStartMonth == 29) {
+                            lastDayOfStartMonth = lastDayOfStartMonth + 2;
+                        }
+
+                        var startdateN = startdate;
+                        var startmonthN = startmonth;
+                        var startyearN = startyear;
+                        var endyearN = endyear;
+                        var endmonthN = endmonth;
+                        var enddateN = enddate;
+
+                        var cellWidth = 0;
+                        var cellMarginLeft = -2;
+
+                        // if (plannedDateFrom == "Aug 2005" && startdate == "16") { var t = 0;  }
+
+                        var condtion = Math.abs(endmonth - startmonth); //Convert - to positive + number
+
+                        if (myTable.rows[0].cells[col].innerHTML == plannedDateFrom) {
+
+                            colFill = true;
+
+                            for (let MarginLeft = 1; MarginLeft < startdate; MarginLeft++) {
+                                cellMarginLeft += 2.5;
+                            }
+
+                            if (startdate == enddate && startmonth == endmonth && startyear == endyear) {
+                                cellWidth += 2;
+                            }
+                            else if (startdate < enddate && startmonth == endmonth && startyear == endyear) {
+                                for (startdateN; startdateN <= enddate; startdateN++) {
+                                    cellWidth += 2.5;
+                                }
+                            }
+                            else {
+                                lastDayOfStartMonth == 30 ? cellWidth += 2 : cellWidth;
+                                for (startdateN; startdateN <= lastDayOfStartMonth; startdateN++) {
+                                    cellWidth += 2.5;
+                                }
+                            }
+
+                        }
+                        if (colFill == true) {
+
+                            if (myTable.rows[0].cells[col].innerHTML == plannedDateTo && condtion >= 1) {
+                                for (var count = 1; count < enddate; count++) {
+                                    cellWidth += 2.5;
+                                }
+                            }
+                            else {
+                                if (condtion >= 1 && myTable.rows[0].cells[col].innerHTML != plannedDateFrom) {
+                                    cellWidth += 78;
+                                }
+                            }
+                            cellWidth = (enddate == 31 && endmonth > 4) ? cellWidth + 1 : cellWidth;
+                            if (myTable.rows[0].cells[col].innerHTML == plannedDateFrom && startdate == enddate && startmonth == endmonth && startyear == endyear) {
+                                myTable.rows[row + 1].cells[col].innerHTML += '<div class="tooltip" style="width: ' + cellWidth + 'px;margin-left: ' + cellMarginLeft + 'px;position: absolute;background-color:' + color + '"> <span class="tooltiptext2"> ' + startmonthStr.substring(0, 3) + ' ' + startdate + '</span> </br></div>';
+                            }
+                            else if (myTable.rows[0].cells[col].innerHTML == plannedDateFrom && myTable.rows[0].cells[col].innerHTML == myTable.rows[0].cells[11].innerHTML) {
+                                myTable.rows[row + 1].cells[col].innerHTML += '<div class="tooltip" style="width: ' + cellWidth + 'px;margin-left: ' + cellMarginLeft + 'px;position: absolute;background-color:' + color + '"> <span class="tooltiptext1"> ' + startmonthStr.substring(0, 3) + ' ' + startdate + ' to ' + endmonthStr.substring(0, 3) + ' ' + enddate + ',' + endyear + '</span> </br></div>';  //' + startdate + '
+                            }
+                            else if (myTable.rows[0].cells[col].innerHTML == plannedDateFrom) {
+                                myTable.rows[row + 1].cells[col].innerHTML += '<div class="tooltip" style="width: ' + cellWidth + 'px;margin-left: ' + cellMarginLeft + 'px;position: absolute;background-color:' + color + '"> <span class="tooltiptext"> ' + startmonthStr.substring(0, 3) + ' ' + startdate + ' to ' + endmonthStr.substring(0, 3) + ' ' + enddate + ',' + endyear + '</span> </br></div>';  //' + startdate + '
+                            }
+                            else {
+                                myTable.rows[row + 1].cells[col].innerHTML += '<div style="width: ' + cellWidth + 'px;margin-left: -1px;position: absolute;background-color:' + color + '"></br></div>';  //' + startdate + '
+                            }
+                        }
+                        if (myTable.rows[0].cells[col].innerHTML == plannedDateTo || myTable.rows[0].cells[col].innerHTML == myTable.rows[0].cells[11].innerHTML) {
+                            colFill = false;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+</script>
+
+<body>
+    <div id="appendTable"></div>
+</body>
+
+</html>

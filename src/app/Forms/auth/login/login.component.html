@@ -1,0 +1,87 @@
+<header id="header" class="animated fadeInDown">
+
+  <div id="logo-group1" style="background-color: #f4f4f4">
+    <span id="logo"> <img [src]="logo_url" alt=" "> </span>
+  </div>
+  <!-- <span id="extr-page-header-space"> <span class="hidden-mobile hiddex-xs">Need an account?</span> <a routerLink="/auth/register" class="btn btn-danger">Create account</a> </span> -->
+</header>
+<div id="main" role="main" class="animated fadeInDown">
+
+  <div id="content" class="container">
+    <div class="row">
+      <div class="col-xs-12 col-sm-12 col-md-7 col-lg-8 hidden-xs hidden-sm">
+        <h1 class="txt-color-red login-header-big">Citizen Reporting System</h1>
+
+        <div class="hero">
+          <div class="pull-left login-desc-box-l">
+            <h4 class="paragraph-header"></h4>
+
+            <div class="login-app-icons">
+              <a routerLink="/dashboard/analytics" class="btn btn-danger btn-sm"></a>
+              <a routerLink="/smartadmin/app-layouts" class="btn btn-danger btn-sm"></a>
+            </div>
+          </div>
+          <img src="assets/img/demo/iphoneview.png" class="pull-right display-image" alt="" style="width:210px">
+        </div>
+        <div class="row">
+          <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <h5 class="about-heading"></h5>
+
+            <p>
+            </p>
+          </div>
+          <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <h5 class="about-heading"></h5>
+
+            <p>
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-xs-12 col-sm-12 col-md-5 col-lg-4">
+        <div class="well no-padding">
+          <form class="smart-form client-form">
+            <header>
+              Sign In
+            </header>
+            <fieldset>
+              <section>
+                <label class="label">Email</label>
+                <label class="input"> <i class="icon-append fa fa-user"></i>
+                  <input type="text" name="username" [(ngModel)]="loginparam.UserName" data-smart-validate-input="" data-required="" data-email="" data-message-required="Please enter your  User Name" data-message-email="Please enter a VALID USER NAME">
+                  <b class="tooltip tooltip-top-right"><i class="fa fa-user txt-color-teal"></i>
+                    Please enter email username</b></label>
+              </section> 
+                
+              <section>
+                <label class="label">Password</label>
+                <label class="input"> <i class="icon-append fa fa-lock"></i>
+                  <input type="password" name="password" [(ngModel)]="loginparam.Password" data-smart-validate-input="" data-required="" data-minlength="3" data-maxnlength="20" data-message="Please enter your email password">
+                  <b class="tooltip tooltip-top-right"><i class="fa fa-lock txt-color-teal"></i> Enter
+                    your password</b> </label>
+                    <div class="note" *ngIf="inValidCredential" >
+                    <label class=" label txt-color-red">!  Please Enter a Valid Email ID and Password </label>
+                    </div>
+                <div class="note">
+                  <!-- <a routerLink="/auth/forgot-password">Forgot password?</a> -->
+                </div>
+              </section>
+              <section>
+                <label class="checkbox">
+                  <input type="checkbox" name="remember" checked>
+                  <i></i>Stay signed in</label>
+              </section>
+            </fieldset>
+            <footer>
+              <button (click)="login($event)" class="btn btn-primary">
+                Sign in
+              </button>
+            </footer>
+          </form>
+        </div>
+        <!-- <h5 class="text-center"> - Or sign in using -</h5> -->
+         
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,558 @@
+<style>
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: #f1f1f100;
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+
+  }
+</style>
+<aside id="left-panel" style="padding-top: 0px;">
+  <!-- <sa-minify-menu></sa-minify-menu> -->
+  <!-- User info -->
+  <sa-login-info></sa-login-info>
+  <!-- end user info -->
+
+  <nav style="max-height: 95%;overflow-y: scroll;position: absolute;min-width: 100%;">
+    <!-- NOTE: Notice the gaps after each icon usage <i></i>..
+    Please note that these links work a bit different than
+    traditional href="" links. See documentation for details.
+    -->
+
+    <ul saSmartMenu>
+      <li>
+        <a href="#">
+          <i class="fa fa-lg fa-fw fa-bar-chart-o"></i>
+          <span class="menu-item-parent">{{'Engineering' | i18n}}</span>
+        </a>
+        <ul>
+          <li routerLinkActive="active" *ngIf="arrayName.indexOf(1)!=-1">
+            <a routerLink="/drawing-register">{{'Drawing Register' | i18n}}</a>
+          </li>
+          <!--<li routerLinkActive="active"*ngIf="arrayName.indexOf()!=-1">
+            <a routerLink="/customerdrawings">{{'Customer Drawings'|i18n}}</a>
+          </li>  -->
+          <!-- *ngIf="arrayName.indexOf()!=-1" -->
+          <li routerLinkActive="active" *ngIf="arrayName.indexOf(5)!=-1">
+            <a routerLink="/bom-viewer">{{'BOM Viewer' | i18n}}</a>
+          </li>
+          <li routerLinkActive="active" *ngIf="arrayName.indexOf(6)!=-1">
+            <a routerLink="/bom-release">{{'BOM Release'|i18n}}</a>
+          </li>
+          <li routerLinkActive="active" *ngIf="arrayName.indexOf(3)!=-1">
+            <a routerLink="/ItemMaster">{{'Item Master' | i18n}}</a>
+          </li>
+          <!--  
+          <li routerLinkActive="active"*ngIf="arrayName.indexOf(2)!=-1">
+            <a routerLink="/graphs/morris-charts">{{'Master list of drawings' | i18n}}</a>
+          </li> -->
+          <li routerLinkActive="active">
+            <a routerLink="/BOM">{{'BOM' | i18n}}</a>
+          </li>
+          <li routerLinkActive="active" *ngIf="arrayName.indexOf(7)!=-1">
+            <a routerLink="/ItemDesignChangeAdvice">{{'Item Design Change Advice'|i18n}}</a>
+          </li>
+          <li routerLinkActive="active" *ngIf="arrayName.indexOf(8)>-1">
+            <a routerLink="/EngineeringSpecification">{{'Engineering Specification'|i18n}}</a>
+          </li>
+          <li routerLinkActive="active" *ngIf="arrayName.indexOf(9)!=-1">
+            <a routerLink="/TransformerSpecification">{{'Transformer Specification'|i18n}}</a>
+          </li>
+          <li routerLinkActive="active" *ngIf="arrayName.indexOf(10)>-1">
+            <a routerLink="/ActivityBarchart">{{'Activity Barchart'|i18n}}</a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/DrawingReleaseNote">{{'Drawing Release Note'|i18n}}</a>
+          </li>
+          <!--  <li routerLinkActive="active">
+            <a routerLink="/graphs/chart-js">{{'Master BOMS in Work order/ Work order Item'|i18n}}</a>
+          </li>-->
+          <li routerLinkActive="active">
+            <a routerLink="/workorderalertpoint">{{'Work Order Alert Points/ Corrective Actions'|i18n}}</a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/masterlistofdrawings">{{'Master List Of Drawings' | i18n}}</a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/EngineeringReleaseNote">{{'Engineering Release Note'|i18n}}</a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/customerdrawings">{{'Customer Drawings'|i18n}}</a>
+          </li>
+          <!-- <li routerLinkActive="active">
+            <a routerLink="/graphs/chart-js">{{'Approved Customer Drawings'|i18n}}</a>
+          </li>-->
+          <li routerLinkActive="active">
+            <a (click)="openReport()">{{'Product Codelist'|i18n}}</a>
+          </li>
+          <!-- <li routerLinkActive="active">
+            <a routerLink="/ItemCodeSearch">{{'ItemCode Search'|i18n}}</a>
+          </li> -->
+          <li routerLinkActive="active">
+            <a routerLink="/InstructManuals">{{'Al-Ahleia Instruction Manuals' | i18n}}</a>
+          </li>
+        </ul>
+      </li>
+
+      <li>
+        <a href="#">
+          <i class="fa fa-lg fa-fw fa-table"></i>
+          <span class="menu-item-parent">{{'Procurement' | i18n}}</span>
+        </a>
+        <ul>
+        
+          <li routerLinkActive="active">
+            <a routerLink="/PurchaseRequisition">{{'Purchase Requisition' | i18n}}</a>
+          </li>
+            <!--  <li routerLinkActive="active">
+              <a routerLink="/tables/datatables">{{'Offer Comparison ' | i18n}} </a>
+            </li>-->
+            <li routerLinkActive="active">
+              <a routerLink="/PurchaseOrder">{{'Purchase Order' | i18n}}</a>
+            </li>
+          <li routerLinkActive="active">
+            <a routerLink="/PurchaseOrderViewer">{{'Purchase Order viewer' | i18n}} </a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/CreditNoteRegister">{{'Credit Note Register' | i18n}} </a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/DecisionOnDamagedItem">{{'Decision on Damaged Items' | i18n}} </a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/LetterOfCredit">{{'LC Register' | i18n}}</a>
+          </li>
+          <!-- <li routerLinkActive="active">
+              <a routerLink="/tables/ngx-datatable">{{'Purchase order payment planning' | i18n}} </a>
+            </li>
+            <li routerLinkActive="active">
+              <a routerLink="/tables/ngx-datatable">{{'Purchase order payment request' | i18n}} </a>
+            </li>-->
+          <li routerLinkActive="active">
+            <a routerLink="/ItemDeliveryandPaymentStatus">{{'Item Delivery and Payment Status Report' | i18n}}</a>
+          </li>
+
+          <li routerLinkActive="active" *ngIf="arrayName.indexOf(29)!=-1">
+            <a routerLink="/minimum-quantity">{{'Minimum Quantity' | i18n}} </a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/supplier-cpa">{{'Supplier CPA' | i18n}} </a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/po-price-compare">{{'PO Price Compare' | i18n}} </a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/PurchaseBaseUnitConversion">{{'Purchase Unit / Base Unit Conversion' | i18n}}</a>
+          </li>
+          <!-- <li routerLinkActive="active">
+            <a routerLink="/tables/ngx-datatable">{{'BOM Reservation/BO Item Planning' | i18n}} </a>
+          </li>-->
+          
+          <!-- <li routerLinkActive="active">
+            <a routerLink="/ShipmentClearenceMemo">{{'Shipment clearence memo' | i18n}} </a>
+          </li> -->
+          <!--
+            <li routerLinkActive="active">
+            <a routerLink="/tables/ngx-datatable">{{'PO delivery/clearence Status' | i18n}} </a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/tables/ngx-datatable">{{'Trafex Order' | i18n}} </a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/tables/ngx-datatable">{{'Compile BOM for work order tender' | i18n}}</a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/tables/ngx-datatable">{{'WO BOM reservation' | i18n}} </a>
+          </li>
+    
+          <li routerLinkActive="active">
+            <a routerLink="/tables/ngx-datatable">{{'Item to order' | i18n}}</a>
+          </li>-->
+   
+          <li routerLinkActive="active">
+            <a routerLink="/SupplierRegister">{{'Supplier Register (Evaluation)' | i18n}} </a>
+          </li>
+   <!--    <li routerLinkActive="active">
+            <a routerLink="/tables/ngx-datatable">{{'Approved Supplier' | i18n}} </a>
+          </li> -->
+          <li routerLinkActive="active">
+            <a routerLink="/SupplierDevelopment">{{'Supplier Development' | i18n}} </a>
+          </li>
+
+          <li routerLinkActive="active">
+            <a routerLink="/lme-register">{{'LME Register' | i18n}} </a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/offercomparison">{{'Offer Comparison ' | i18n}} </a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/WoOrderingLimit">{{'Work Order Ordering limit' | i18n}} </a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/WoBomReservation">{{'Wo Bom Reservation' | i18n}} </a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/BoItemPlanning">{{'BO item planning' | i18n}} </a>
+          </li>
+           <li routerLinkActive="active">
+            <a routerLink="/PORejection">
+              {{'PO Rejected / Damaged / Accepted Items' | i18n}}</a>
+          </li>
+         <li routerLinkActive="active">
+            <a routerLink="/ItemConsumptionRpt">
+              {{'Item Consumption Report' | i18n}}</a>
+          </li>
+          <!-- <li routerLinkActive="active">
+            <a routerLink="/BomCosting">{{'Costing' | i18n}} </a>
+          </li> -->
+        </ul>
+      </li>
+
+      <li>
+        <a href="#">
+          <i class="fa fa-lg fa-fw fa-pencil-square-o"></i>
+          <span class="menu-item-parent">{{'Main'| i18n}}</span>
+        </a>
+        <ul>
+           
+        </ul>
+      </li>
+      <li>
+        <a href="#">
+          <i class="fa fa-lg fa-fw fa-pencil-square-o"></i>
+          <span class="menu-item-parent">{{'Accounts'| i18n}}</span>
+        </a>
+        <ul>
+          <li routerLinkActive="active">
+            <a routerLink="/PORegister">
+              {{'PO Register (SHBC,Marfa,...)' | i18n}}</a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/CashPayVoucherSalary/0">
+              {{'Cash Payment Voucher Salary' | i18n}}</a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/CashPayVoucherMobile/1">
+              {{'Cash Payment Voucher Mobile' | i18n}}</a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/CashPayVoucherHouse/2">
+              {{'Cash Payment Voucher House' | i18n}}</a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/CashPayVoucherCar/3">
+              {{'Cash Payment Voucher Car' | i18n}}</a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/CashPayVoucherSalarySHBC/4">
+              {{'Cash Payment Voucher Salary SHBC' | i18n}}</a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/CustContractDetails">
+              {{'Customer Contract Details' | i18n}}</a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/InvoiceRegister">
+              {{'Invoice (Ahleia,SHBC,...)' | i18n}}</a>
+          </li>
+        </ul>
+      </li>
+
+      <li>
+        <a href="#">
+          <i class="fa fa-lg fa-fw fa-pencil-square-o"></i>
+          <span class="menu-item-parent">{{'Personnal'| i18n}}</span>
+        </a>
+        <ul>
+          <li routerLinkActive="active">
+            <a routerLink="/InductionChkList">
+              {{'Induction Check List' | i18n}}</a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/EmploySkillMatrix">
+              {{'Employee Skill Matrix' | i18n}}</a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/EmployeeHostel">
+              {{'Employee Hostel Register' | i18n}}</a>
+          </li>
+          <li routerLinkActive="active">
+              <a routerLink="/CampStockRegister">
+                {{'Camp Stock Register' | i18n}}</a>
+            </li>
+        </ul>
+      </li>
+      <li>
+        <a href="#">
+          <i class="fa fa-lg fa-fw fa-desktop"></i>
+          <span class="menu-item-parent">{{'Stores' | i18n}}</span>
+        </a>
+        <ul>
+          <li routerLinkActive="active">
+            <a routerLink="/StoreReceiptVoucher">{{'Store Receipt Voucher' | i18n}}</a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/StoreIssueVoucher">{{'Store Issue Voucher' | i18n}}</a>
+          </li>
+         
+          <li routerLinkActive="active">
+            <a routerLink="/StockReturnDocument">{{'Store Return Document' | i18n}}</a>
+          </li> 
+          <!-- <li routerLinkActive="active">
+            <a routerLink="/forms/elements">{{'Store Transfer Voucher' | i18n}}</a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/forms/elements">{{'Delivery Note (SDO)' | i18n}}</a>
+          </li>-->
+           <li routerLinkActive="active">
+            <a routerLink="/ProductionVoucher">{{'Production Voucher' | i18n}}</a>
+          </li>   
+          <li routerLinkActive="active">
+            <a routerLink="/StockAdjustmentVoucher">{{'Stores Adjustment voucher' | i18n}}</a>
+          </li>
+          <!-- <li routerLinkActive="active">
+            <a routerLink="/MasterListofAssets">{{'Assets' | i18n}}</a>
+          </li> -->
+          <li routerLinkActive="active">
+            <a routerLink="/ExpiredItemsDetails">{{'Expired items details' | i18n}}</a>
+          </li>
+          <!-- <li routerLinkActive="active">
+            <a routerLink="/forms/elements">{{'Barcode Label Printing ' | i18n}}</a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/forms/elements">{{'Rejected/ Damajed Item View ' | i18n}}</a>
+          </li>-->
+          <li routerLinkActive="active">
+            <a routerLink="/damagedcaseform">{{'Damaged Case Form ' | i18n}}</a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/ExpiredItemBin">{{'Expired Items Bin' | i18n}}</a>
+          </li>
+          <!-- <li routerLinkActive="active">
+            <a routerLink="/StoreIssueVoucher">{{'Store Issue Voucher' | i18n}}</a>
+          </li> -->
+          <!-- <li routerLinkActive="active">
+            <a routerLink="/DeliveryNote">{{' DeliveryNote' | i18n}}</a>
+          </li> -->
+        </ul>
+      </li>
+     
+      <li routerLinkActive="active">
+        <a href="#">
+          <i class="fa fa-lg fa-fw fa-list"></i>
+          <span class="menu-item-parent">{{'Quality' | i18n}}</span>
+        </a>
+        <ul>
+          <!-- <li routerLinkActive="active">
+                        <a routerLink="/forms/elements">{{'Final Inspection Report' | i18n}}</a>
+                      </li>-->
+          <li routerLinkActive="active">
+            <a routerLink="/QANonConformanceReport">{{'QA Non Conformance Report' | i18n}}</a>
+          </li>
+          <!-- <li routerLinkActive="active">
+            <a routerLink="/NCRViewer">{{'Non Conformance Report Viewer' | i18n}}</a>
+          </li> -->
+          <li routerLinkActive="active">
+            <a routerLink="/ItemsToRework">{{'Item To Rework' | i18n}}</a>
+          </li>
+
+        </ul>
+      </li>
+
+      <li>
+        <a href="#">
+          <i class="fa fa-lg fa-fw fa-cloud">
+            <!-- <em>2</em> -->
+          </i>
+          <span class="menu-item-parent">{{'OE/OSP' | i18n}}</span>
+        </a>
+        <ul>
+          <li routerLinkActive="active">
+            <a routerLink="/customermaster">{{'Customer Master' | i18n}}</a>
+          </li>
+          <!-- <li routerLinkActive="active">
+                <a routerLink="/coi-tabs">{{'Customer Order Information' | i18n}}</a>
+              </li>
+              
+              
+              <li routerLinkActive="active">
+                <a routerLink="/forms/elements">{{'Item Blocking ' | i18n}}</a>
+              </li>
+              <li routerLinkActive="active">
+                <a routerLink="/forms/elements">{{'Work Order Screen' | i18n}}</a>
+              </li>-->
+          <li routerLinkActive="active">
+            <a routerLink="/ExchangeRates">{{'Exchange Rates' | i18n}}</a>
+          </li>
+          <!-- <li routerLinkActive="active">
+                <a routerLink="/forms/elements">{{'Clearance of ordering materials' | i18n}}</a>
+              </li>
+              -->
+
+          <li routerLinkActive="active" *ngIf="arrayName.indexOf(69)!=-1">
+            <a routerLink="/duty-log">{{'OE Duty Log' | i18n}}</a>
+          </li>
+
+          <li routerLinkActive="active">
+            <a routerLink="/SupplierBankGarRegister">{{'Supplier Bank Guarantee Register' | i18n}}</a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/BankGuaranteeRegister">{{'Bank Guarantee Registers' | i18n}}</a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/Workorder">{{'Work Order Screen' | i18n}}</a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/COI">{{'Customer Order Information' | i18n}}</a>
+          </li>
+        </ul>
+      </li>
+
+      <li>
+        <a href="#">
+          <i class="fa fa-lg fa-fw fa-puzzle-piece"></i>
+          <span class="menu-item-parent">{{'Production' | i18n}}</span>
+        </a>
+        <ul>
+          <!-- <li routerLinkActive="active">
+            <a routerLink="/app-views/projects">
+              {{'CNC Program Register' | i18n}}</a>
+          </li> -->
+          <li routerLinkActive="active">
+            <a routerLink="/CncLoadingChart"> {{'CNC Loading Chart' | i18n}}</a>
+          </li>
+          <li routerLinkActive="active" *ngIf="arrayName.indexOf(72)!=-1">
+            <a routerLink="/bending-allowance">
+              {{'CNC Bending Allowance' | i18n}}</a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/sheetmaster">
+              {{'CNC Sheet master' | i18n}}</a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/setupsheet">
+              {{'Setup Sheet' | i18n}}</a>
+          </li>
+          <!--
+          <li routerLinkActive="active">
+            <a routerLink="/app-views/gallery">
+              {{'CNC Sheet Inventory' | i18n}}</a>
+          </li>-->
+          <li routerLinkActive="active">
+            <a routerLink="/BoShortage">
+              {{'BO Shortage' | i18n}}</a>
+          </li>
+          <!-- <li routerLinkActive="active">
+            <a routerLink="/NonConformanceReport">
+              {{'Non Conformance Report' | i18n}}</a>
+          </li> -->
+          <li routerLinkActive="active">
+            <a routerLink="/serialnumber">
+              {{'Serial Number Register' | i18n}}</a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/despatch-register">{{'Despatch Register' | i18n}}</a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/SheetInventory">{{'Sheet Inventory' | i18n}}</a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/AssemblyBarcodeScan">
+              {{'Product Assembly - Assembly barcode Scan' | i18n}}</a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/MonthlyProductionPlan">
+              {{'Monthly Production Planning' | i18n}}</a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/GasCylinderRegister">
+              {{'Gas Cylinder Register' | i18n}}</a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/BarCodeSystem">
+              {{'Barcode System (Job Card Processing) ' | i18n}}</a>
+          </li>
+
+
+
+        </ul>
+      </li>
+
+      <li>
+        <a href="#">
+          <i class="fa fa-lg fa-fw fa-puzzle-piece"></i>
+          <span class="menu-item-parent">{{'General' | i18n}}</span>
+        </a>
+        <ul>
+
+          <li routerLinkActive="active">
+            <a routerLink="/InterOfficeMemo">
+              {{'Inter Office Memo' | i18n}}</a>
+          </li>
+
+          <li routerLinkActive="active">
+            <a routerLink="/ITHelpDesk">
+              {{'IT Help Desk' | i18n}}</a>
+          </li>
+
+          <li routerLinkActive="active">
+            <a routerLink="/TelephoneDirectory">
+              {{'Telephone Directory' | i18n}}</a>
+          </li>
+          <li routerLinkActive="active">
+              <a routerLink="/FaxRegister">
+                {{'Fax Register' | i18n}}</a>
+            </li>
+           
+            <li routerLinkActive="active">
+              <a routerLink="/MOM">
+                {{'Minutes of Meeting' | i18n}}</a>
+            </li>
+            <li routerLinkActive="active">
+              <a routerLink="/ABMTraining">{{'ABM Training Request' | i18n}}</a>
+            </li>
+            <li routerLinkActive="active">
+                <a routerLink="/MeetingRoom">{{'Meeting Room Register' | i18n}}</a>
+              </li>
+              <li routerLinkActive="active">
+                <a routerLink="/Marine">{{'Marine Insurance' | i18n}}</a>
+              </li>
+              <li routerLinkActive="active">
+                  <a routerLink="/AccidentRegister">{{'Accident Register' | i18n}}</a>
+                </li>
+              <li routerLinkActive="active">
+                  <a routerLink="/LaptopRegister">{{'Laptop Register' | i18n}}</a>
+                </li>
+              <li routerLinkActive="active">
+                  <a routerLink="/TonerRequestRegister">{{'Toner Request Register' | i18n}}</a>
+                </li>
+                <li routerLinkActive="active">
+                  <a routerLink="/DMS">{{'Document Management System' | i18n}}</a>
+                </li>
+        </ul>
+      </li>
+      <li>
+        <a href="#">
+          <i class="fa fa-lg fa-fw fa-puzzle-piece"></i>
+          <span class="menu-item-parent">{{'IT Administration' | i18n}}</span>
+        </a>
+        <ul>
+          <li routerLinkActive="active">
+            <a routerLink="/user-administration">
+              {{'User Administration' | i18n}}</a>
+          </li>
+        </ul>
+      </li>
+
+    </ul>
+  </nav>
+  <sa-minify-menu style="position: absolute;bottom: 5%;z-index: 1000;text-align:left;width: 20%;height: 20PX;margin-left: 75%;">
+  </sa-minify-menu>
+</aside>

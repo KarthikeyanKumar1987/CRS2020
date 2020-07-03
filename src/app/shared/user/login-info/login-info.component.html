@@ -1,0 +1,26 @@
+<div class="panel panel-info loginPanel" *ngIf="us.user$ | async as user" >
+  <div class="login-info panel-heading loginHead" (click)="toggle()" >
+    <a style="width:100%;">
+      <img src="assets/img/avatars/sunny.png" alt="image" class="online loginImg" />
+      <span class="loginName" >{{user.Username }}</span>&nbsp;
+      <span style="float: right;
+      padding-top: 5px;
+      padding-right: 6px;" class="glyphicon" [ngClass]="{'glyphicon-chevron-down': opened,'glyphicon-chevron-right': !opened}"></span>
+    </a>  
+  </div>
+  <div class="panel-body loginBody" *ngIf="opened" >
+    <table class="table" style="margin-bottom: 0px;"> 
+      <tr>
+        <td class="loginCol" ><i class="fa fa-hand-o-right" style="margin-left: 10px;padding-right: 5px;"></i> &nbsp;{{user.Department }}</td>
+      </tr>
+      <tr>
+        <td class="loginCol"><i class="fa fa-hand-o-right" style="margin-left: 10px;padding-right: 5px;"></i>&nbsp;{{user.Designation}}</td>
+      </tr>
+      <tr>
+        <td class="loginCol"><i class="fa fa-hand-o-right" style="margin-left: 10px;padding-right: 5px;"></i>&nbsp;17/05/19</td>
+      </tr>
+    </table>  
+  </div>
+<div>
+  
+

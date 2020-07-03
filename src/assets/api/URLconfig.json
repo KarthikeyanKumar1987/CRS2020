@@ -1,0 +1,32 @@
+{
+"test1":{       
+    "Profile":"Local",
+    "API_Url":"http://localhost:32599/",
+    "Logo_Url":"http://localhost:4200/assets/img/logo1.png",
+    "UI_Url": "http://localhost:4200/QtCtErpUi/",
+    "Report_Url":"http://62.215.232.118/QtCtErpReports/"
+},
+
+
+"test2":{           
+    "Profile":"SIT",  
+    "API_Url":"http://qtsp2016.centralus.cloudapp.azure.com/QtCtErpApi/",
+    "Logo_Url":"http://qtsp2016.centralus.cloudapp.azure.com/QtCtErpUi/assets/img/logo1.png",
+    "UI_Url": "http://qtsp2016.centralus.cloudapp.azure.com/QtCtErpUi/",
+    "Report_Url":"http://62.215.232.118/QtCtErpReports/"
+},
+"test3":{           
+    "Profile":"UAT",  
+    "API_Url":"http://localhost:32599/",
+    "Logo_Url":"http://192.168.4.40/QtCtErpUi/assets/img/logo1.png",
+    "UI_Url": "http://192.168.4.40/QtCtErpUi/",
+    "Report_Url":"http://localhost:51305/"
+},
+"endPointLive":{           
+    "Profile":"UAT",  
+    "API_Url":"http://62.215.232.118//QtCtErpApi/",
+    "Logo_Url":"http://62.215.232.118//QtCtErpUi/assets/img/logo1.png",
+    "UI_Url": "http://62.215.232.118//QtCtErpUi/",
+    "Report_Url":"http://62.215.232.118//QtCtErpReports/"
+}
+}

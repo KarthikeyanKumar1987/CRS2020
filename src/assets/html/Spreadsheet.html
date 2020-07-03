@@ -1,0 +1,1453 @@
+<!doctype html>
+<html>
+
+<head>
+  <link rel="stylesheet" type="text/css"
+    href="https://cdn.jsdelivr.net/npm/handsontable@latest/dist/handsontable.full.min.css">
+  <link rel="stylesheet" type="text/css" href="https://handsontable.com/static/css/main.css">
+  <script src="https://cdn.jsdelivr.net/npm/handsontable@latest/dist/handsontable.full.js"></script>
+  <script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+    crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="notifications.css" type="text/css">
+  <script src="notifications.js" type="text/javascript"></script>
+</head>
+
+<style>
+  /* Set Background Color For Ready Only Cell/Column */
+  .handsontable .htDimmed {
+    font-weight: normal;
+    /* background-color: #cbd9e4; */
+  }
+
+  /* Set Background Color Grey */
+  .bgGrey {
+    background-color: #f3f3f3 !important;
+    text-align: center !important;
+    font-weight: bold !important;
+    color: black !important;
+  }
+
+  /* Set Background Color For Cell/Column Double Click */
+  textarea.handsontableInput {
+    background-color: blue !important;
+    color: white !important;
+    font-weight: bold !important;
+  }
+
+  /* Set FOnt Color For Cell Content */
+  .fontBlue {
+    color: darkblue !important;
+    text-align: center !important;
+  }
+
+  /* Set font bold For Cell Content */
+  .fontBold {
+    font-weight: bold;
+    text-align: center !important;
+  }
+
+  .fontItalic {
+    font-style: italic;
+    text-align: center !important;
+  }
+
+  .pointerNone {
+    pointer-events: none !important;
+    text-align: center !important;
+    background-color: #cbd9e4 !important;
+  }
+
+  .fontUnderline {
+    text-decoration: underline;
+    text-align: center !important;
+  }
+
+  /* Screen Loader */
+  .loader {
+    visibility: hidden;
+    top: 50%;
+    left: 50%;
+    position: absolute;
+    margin: -20px 0 0 -20px;
+    border-radius: 50%;
+    border: 5px solid #e2e2e2;
+    border-top: 5px solid blue;
+    width: 60px;
+    height: 60px;
+    -webkit-animation: spin 1s linear infinite;
+    animation: spin 1s linear infinite;
+  }
+
+  @-webkit-keyframes spin {
+    0% {
+      -webkit-transform: rotate(0deg);
+    }
+
+    100% {
+      -webkit-transform: rotate(360deg);
+    }
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  .spinner_overlay {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
+    opacity: 0.5;
+    z-index: 1000;
+  }
+
+  /* TOP Header Height */
+  .handsontable span.colHeader {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    font-weight: bold;
+    white-space: pre-line;
+    max-width: 150px;
+  }
+
+  /* Merge corner header and first row header */
+  .handsontable TR:first-child TH:first-child {
+    background: #f0f0f0;
+  }
+
+  .handsontable THEAD TR:first-child TH:first-child::after {
+    background: #f0f0f0;
+    height: 45px;
+    width: 49px;
+    border-left: 1px solid #ccc;
+    border-top: 1px solid #ccc;
+    content: '';
+    top: 0;
+    position: absolute;
+    left: 0;
+  }
+
+  .handsontable tr:first-child td:first-child,
+  .handsontable tr:first-child th:first-child {
+    border-top: none
+  }
+</style>
+
+<body>
+
+  <!-- <div id="loading" class="spinner_overlay">
+    <div class="loader">
+    </div>
+  </div> -->
+
+  <form>
+
+    <div class="btn-toolbar" style="margin-bottom:5px">
+      <div class="btn-group pull-left">
+        <button id="btnModify" (click)="newData()" type="button" class="btn btn-primary btn-xs" style="margin-right:5px"
+          disabled="true"><i class="fa fa-edit"></i> Modify
+        </button>
+        <button id="btnRefresh" (click)="refreshData()" type="button" class="btn btn-primary btn-xs"
+          style="margin-right:5px" disabled="true"> <i class="fa fa-refresh"></i> Refresh
+        </button>
+        <button id="btnSave" type="button" class="btn btn-primary btn-xs" style="margin-right:5px" disabled="true"><i
+            class="fa fa-save"></i> Save</button>
+        <button id="btnCancel" type="button" class="btn btn-danger btn-xs" style="margin-right:5px"><i class="fa fa-ban"
+            disabled="true"></i> Cancel</button>
+      </div>
+    </div>
+
+    <div id="handsonTable">
+      <div id='hot'></div>
+    </div>
+
+  </form>
+
+  <script>
+
+    // setTimeout(function () {
+    //   alert("te")
+    //   var storedItems = JSON.parse(localStorage.getItem("BOMSections"));
+    //   storedItems[0] ? getBOMSection() : localStorage.removeItem('BOMSections');
+    // }, 5000);
+
+    // var interval = setInterval(async () => {
+    //   alert("test inter")
+    //   clearInterval(interval);
+    // }, 10000);
+
+
+    var setIntervalBOMSection = [];
+    var isItemReadOnly;
+    setInterval(function () {
+      setIntervalBOMSection = JSON.parse(localStorage.getItem("BOMSections"));
+      isItemReadOnly = JSON.parse(localStorage.getItem("BOMItemReadOnly"));
+      setIntervalBOMSection != null ? getBOMSection() : '';
+      if (isItemReadOnly) {
+        $('#btnModify').attr("disabled", true);
+        $('#btnCancel').attr("disabled", true);
+        $('#btnRefresh').attr("disabled", true);
+      }
+    }, 1000);
+
+    var hot;
+    var hotElement;
+    var hotElementContainer;
+
+    // var endPointURL = 'http://localhost:32599/';
+    // var endPointURL = 'http://62.215.232.118/QtCtErpApi/'
+    // var endPointURL = 'http://qtsp2016.centralus.cloudapp.azure.com/QtCtErpApi/'
+
+    var dataObject;
+    var sourceObject;
+    var updatedDataObject;
+    var updatedColWidth;
+
+    var colHeaders;
+    var HeaderRenameCoords;
+    var HeaderRenameCoordsTH;
+
+    var SupportHeaderDetails;
+
+    var selectedRowColIndex;
+    var lastColIndex;
+    var unitColIndex;
+    var ttlQtyColIndex;
+
+    var activeCellValue;
+    var activeCellOldValue;
+    var activeIndexOfCol;
+    var activeIndexOfRow;
+    var selectedItemCode;
+    var selectedDrawingno;
+
+    var dataObjectKeys = [];
+    var deletedSourceObjects = [];
+    var IsPasteXL = false;
+    var isReadyonly = true;
+    var LockColumns = [];
+    var currentUserName;
+
+
+    function getData() {
+
+      $("#hot").toggle();
+      currentUserName = JSON.parse(localStorage.getItem("UserInfo"))[0].Username;
+      var urlParams = window.location.search.replace("?", '').split('&');
+      selectedItemCode = urlParams[0].replace('itemcode=', '');
+      selectedDrawingno = urlParams[1].replace('dwgno=', '');
+      endPointURL = urlParams[2].replace('endPointUrl=', '');
+      url = endPointURL + 'api/BOM/itemlistbeta?' + urlParams[0];
+
+      var api_url = url;
+      $.ajax({
+        url: api_url,
+        beforeSend: function () {
+          // $('.loader').css("visibility", "visible");
+          // localStorage.setItem("isLoadingBOMItem", JSON.stringify(true));
+        },
+        contentType: "application/json",
+        dataType: 'json',
+        success: function (result, status, request) {
+          dataObject = result;
+          Object.keys(dataObject[0]).forEach(key => { dataObjectKeys.push(key) }) //Get Object Keys
+          var resHeaders = request.getAllResponseHeaders();
+          headers = resHeaders.split("\n");
+
+          for (var i = 0; i < headers.length; i++) {
+            header = headers[i].split(": ");
+            if (header[0] == 'supportdetails') {
+              SupportHeaderDetails = JSON.parse(header[1]);
+            }
+          }
+
+          var arrayOfArray = dataObject.map(Object.values);  // convert Arry of Obj to Arry or Arry
+          var nestedheader = SupportHeaderDetails.MQTY.split('*');
+          arrayOfArray.splice(0, 0, nestedheader.slice(1));
+          hotSettings.data = arrayOfArray;
+          hotSettings.colHeaders = SupportHeaderDetails.FmString.split(String.fromCharCode(9));
+          hotSettings.columns = hotSettings.colHeaders;
+          let colWidthStr = SupportHeaderDetails.ColWidth.replace(" ", "").split('*'); // Remove All spaces
+          // hotSettings.colWidths = colWidthStr.split('*');
+          // hotSettings.colWidths = splitStar.map(function (x) { return x.replace('*', '') }); // Replace All '*' in the Arry str ass ''
+
+          // var maxColWidth = colWidthStr.sort((a, b) => a - b)[colWidthStr.length - 1];
+          // if (maxColWidth > 1250) {
+          //   colWidthStr = ["63", "57", "112", "89", "266", "73", "71", "64", "88", "120"]
+          // }
+          hotSettings.colWidths = colWidthStr;
+          hotTableRefresh();
+        },
+        error: function (result, status, request) {
+          showNotify("Error", "No items found.", "error");
+          localStorage.removeItem('isLoadingBOMItem');
+        },
+        complete: function () {
+          showNotify("Information", "Items list loaded successfully.", "info");
+          // $('.loader').css("visibility", "hidden");
+          $('#btnModify').attr("disabled", false);
+          $('#btnCancel').attr("disabled", false);
+          $('#btnRefresh').attr("disabled", false);
+          localStorage.removeItem('isLoadingBOMItem');
+        }
+      });
+
+    }
+
+    function showNotify(title, msg, theme) {
+      window.createNotification({
+        closeOnClick: true,
+        displayCloseButton: true,
+        positionClass: 'nfc-top-right',
+        showDuration: '2000',
+        theme: theme
+      })({
+        title: title,
+        message: msg
+      });
+      return false;
+    }
+
+    var allocateBOMItems = [{
+      key: "subbom:From Qty.Col#1 To Qty.Col#3",
+      name: 'From Qty.Col#1 To Qty.Col#3',
+      hidden: true,
+      callback: function (hot, key, options) {
+        var t = allocateBOMAction(hot.split('subbom:')[1]);
+      }
+    }
+    ]
+
+    var items = {
+      // 'unlock_cell': {
+      //   name: 'cancel lock',
+      //   callback: (key, selection, clickEvent) => {
+      //     var selected = hot.getSelected();
+
+      //     for (var index = 0; index < selected.length; index += 1) {
+      //       var item = selected[index];
+      //       var startRow = Math.min(item[0], item[2]);
+      //       var endRow = Math.max(item[0], item[2]);
+      //       var startCol = Math.min(item[1], item[3]);
+      //       var endCol = Math.max(item[1], item[3]);
+
+      //       for (var rowIndex = startRow; rowIndex <= endRow; rowIndex += 1) {
+      //         for (var columnIndex = startCol; columnIndex <= endCol; columnIndex += 1) {
+      //           hot.setCellMeta(rowIndex, columnIndex, 'className', 'pointerNone');
+      //         }
+      //       }
+      //     }
+      //     hot.render();
+      //   }
+      // },
+
+      "insert_col": {
+        name: 'Insert Column',
+        callback: function (key, options) {
+          var unitColIndex = hot.countCols() - 3;
+          hotSettings.colHeaders.splice(unitColIndex, 0, 'New Column');
+          // Get Added New Colums Count
+          var newColCount = 0;
+          for (col = 7; col < hot.countCols() - 3; col++) {
+            newColCount++;
+          }
+          dataObjectKeys.splice(unitColIndex, 0, 'Col' + newColCount);
+          hotSettings.colWidths.splice(unitColIndex, 0, '150');
+          hotSettings.data.forEach(function (value, index) {
+            index == 0 ? hotSettings.data[index].splice(unitColIndex, 0, 1) : hotSettings.data[index].splice(unitColIndex, 0, null);
+          });
+          hot.loadData(hotSettings.data);
+          hot.render();
+        },
+        disabled: function () {
+          return isReadyonly == true;
+        }
+      },
+      "remove_col": {
+        name: 'Remove Column',
+        // disabled: true,
+        callback: function (key, options) {
+          var unitColIndex = hot.countCols() - 3;
+          var selectedColIndex = hot.getSelected()[0][1];
+          unitColIndex == selectedColIndex ? '' : hotSettings.colHeaders.splice(selectedColIndex, 1);
+          unitColIndex == selectedColIndex ? '' : dataObjectKeys.splice(selectedColIndex, 1);
+          unitColIndex == selectedColIndex ? '' : hotSettings.colWidths.splice(selectedColIndex, 1);
+          hotSettings.data.forEach(function (value, index) {
+            hotSettings.data[index].splice(selectedColIndex, 1);
+          });
+          var rowTotal;
+          var col;
+          var row;
+          var arrayOfMultiplier = hot.getData()[0];
+          // ReCalc the Total Qty
+          for (row = 1; row < hot.countRows(); row++) {
+            rowTotal = 0;
+            for (col = 5; col < hot.countCols() - 3; col++) {
+              var tot = arrayOfMultiplier[col] * hot.getData()[row][col];
+              rowTotal = rowTotal + tot;
+            }
+            hotSettings.data[row][(this.countCols() - 2)] = rowTotal;
+          }
+          hot.render();
+        },
+        disabled: function () {
+          return isReadyonly == true;
+        }
+      },
+      // "multiply_value": {
+      //   name: 'Multiply Value',
+      //   callback: function (key, options) {
+      //   }
+      // },
+      "change_column_title": {
+        name: 'Change Column Title',
+        // disabled: true,
+        callback: function (key, options) {
+          var newHeaderName;
+          if (HeaderRenameCoords.row === -1 || HeaderRenameCoords.col === -1) {
+            let instance = this,
+              isCol = HeaderRenameCoords.row === -1,
+              input = document.createElement('input'),
+              rect = HeaderRenameCoordsTH.getBoundingClientRect(),
+              addListeners = (events, headers, index) => {
+                events.split(' ').forEach(e => {
+                  input.addEventListener(e, () => {
+                    headers[index] = input.value;
+                    newHeaderName = input.value;
+                    instance.updateSettings(isCol ? {
+                      colHeaders: headers
+                    } : {
+                        rowHeaders: headers
+                      });
+                    setTimeout(() => {
+                      if (input.parentNode)
+                        input.parentNode.removeChild(input);
+
+                      //Custom Script for Update Column Name
+                      hotSettings.colHeaders[options[0].start.col] = newHeaderName;
+
+                    });
+
+                  })
+                })
+              },
+              appendInput = () => {
+                input.setAttribute('type', 'text');
+                input.style.cssText = '' +
+                  'position:fixed;' +
+                  'left:' + rect.left + 'px;' +
+                  'top:' + (rect.top + 1) + 'px;' +
+                  'width:' + (rect.width - 1) + 'px;' +
+                  'height:' + (rect.height) + 'px;' +
+                  'background-color:blue;' +
+                  'color:white;' +
+                  'border: 1px solid white;' +
+                  'z-index:1060;';
+                document.body.appendChild(input);
+              };
+            input.value = HeaderRenameCoordsTH.querySelector(
+              isCol ? '.colHeader' : '.rowHeader'
+            ).innerText;
+            appendInput();
+            setTimeout(() => {
+              input.select();
+              addListeners('change blur', instance[
+                isCol ? 'getColHeader' : 'getRowHeader'
+              ](), HeaderRenameCoords[isCol ? 'col' : 'row']);
+            });
+          }
+        },
+        disabled: function () {
+          return isReadyonly == true;
+        }
+      },
+      "allocate_subbom": {
+        key: "subbom",
+        name: "Allocate SUB BOM",
+        "submenu": {
+          "items": allocateBOMItems
+        },
+        disabled: function () {
+          return isReadyonly == true;
+        },
+      },
+      'separator0': { name: '---------' },
+      "row_below": {
+        name: 'Insert Row',
+        disabled: function () {
+          return isReadyonly == true;
+        }
+      },
+      "remove_row": {
+        name: 'Delete Row',
+        disabled: function () {
+          return isReadyonly == true;
+        }
+      },
+      'separator1': { name: '---------' },
+      "font_underline": {
+        name: 'Font Underline',
+        callback: function (key, options) {
+          var startRow = options[0].start.row;
+          var startCol = options[0].start.col;
+          var endRow = options[0].end.row;
+          var endCol = options[0].end.col;
+          hotSettings.data[startRow][dataObjectKeys.length - 1] == 2 ? '' : hotSettings.data[startRow][dataObjectKeys.length - 1] = '1';
+          if (hotSettings.data[startRow][dataObjectKeys.length - 2] && hotSettings.data[startRow][dataObjectKeys.length - 2] != 405) {
+            if (!hotSettings.data[startRow][dataObjectKeys.length - 2].includes('105')) {
+              hotSettings.data[startRow][dataObjectKeys.length - 2] = hotSettings.data[startRow][dataObjectKeys.length - 2] + '105';
+              var spilted = hotSettings.data[startRow][dataObjectKeys.length - 2].match(/.{1,3}/g);
+              hotSettings.data[startRow][dataObjectKeys.length - 2] = spilted.sort().join('');
+            }
+          }
+          else {
+            hotSettings.data[startRow][dataObjectKeys.length - 2] = '105';
+          }
+          hot.render();
+        },
+        disabled: function () {
+          return isReadyonly == true;
+        }
+      },
+      "font_italic": {
+        name: 'Font Italic',
+        callback: function (key, options) {
+          var startRow = options[0].start.row;
+          var startCol = options[0].start.col;
+          var endRow = options[0].end.row;
+          var endCol = options[0].end.col;
+          hotSettings.data[startRow][dataObjectKeys.length - 1] == 2 ? '' : hotSettings.data[startRow][dataObjectKeys.length - 1] = '1';
+          if (hotSettings.data[startRow][dataObjectKeys.length - 2] && hotSettings.data[startRow][dataObjectKeys.length - 2] != 405) {
+            if (!hotSettings.data[startRow][dataObjectKeys.length - 2].includes('205')) {
+              hotSettings.data[startRow][dataObjectKeys.length - 2] = hotSettings.data[startRow][dataObjectKeys.length - 2] + '205';
+              var spilted = hotSettings.data[startRow][dataObjectKeys.length - 2].match(/.{1,3}/g);
+              hotSettings.data[startRow][dataObjectKeys.length - 2] = spilted.sort().join('');
+            }
+          }
+          else {
+            hotSettings.data[startRow][dataObjectKeys.length - 2] = '205';
+          }
+          hot.render();
+        },
+        disabled: function () {
+          return isReadyonly == true;
+        }
+      },
+      "font_bold": {
+        name: 'Font Bold',
+        callback: function (key, options) {
+
+          var startRow = options[0].start.row;
+          var startCol = options[0].start.col;
+          var endRow = options[0].end.row;
+          var endCol = options[0].end.col;
+          hotSettings.data[startRow][dataObjectKeys.length - 1] == 2 ? '' : hotSettings.data[startRow][dataObjectKeys.length - 1] = '1';
+          if (hotSettings.data[startRow][dataObjectKeys.length - 2] && hotSettings.data[startRow][dataObjectKeys.length - 2] != 405) {
+            if (!hotSettings.data[startRow][dataObjectKeys.length - 2].includes('305')) {
+              hotSettings.data[startRow][dataObjectKeys.length - 2] = hotSettings.data[startRow][dataObjectKeys.length - 2] + '305';
+              var spilted = hotSettings.data[startRow][dataObjectKeys.length - 2].match(/.{1,3}/g);
+              hotSettings.data[startRow][dataObjectKeys.length - 2] = spilted.sort().join('');
+            }
+          }
+          else {
+            hotSettings.data[startRow][dataObjectKeys.length - 2] = '305';
+          }
+          hot.render();
+        },
+        disabled: function () {
+          return isReadyonly == true;
+        }
+      },
+      "font_normal": {
+        name: 'Font Normal',
+        callback: function (key, options) {
+          var startRow = options[0].start.row;
+          var startCol = options[0].start.col;
+          var endRow = options[0].end.row;
+          var endCol = options[0].end.col;
+          hotSettings.data[startRow][dataObjectKeys.length - 1] == 2 ? '' : hotSettings.data[startRow][dataObjectKeys.length - 1] = '1';
+          hotSettings.data[startRow][dataObjectKeys.length - 2] = '405';
+          hot.render();
+        },
+        disabled: function () {
+          return isReadyonly == true;
+        }
+      },
+      'separato3': { name: '---------' },
+      "color_asc_items": {
+        name: 'Color ASC Items',
+        disabled: function () {
+          return isReadyonly == true;
+        }
+      },
+      'separato4': { name: '---------' },
+      "auto_serialno_selected": {
+        name: 'AutoSerialNo (For Selected Item)',
+        disabled: function () {
+          return isReadyonly == true;
+        }
+      },
+      "auto_serialno": {
+        name: 'Auto Serial No.',
+        disabled: function () {
+          return isReadyonly == true;
+        }
+      },
+      "make_read_only_lock": {
+        name: 'Lock Columns',
+        callback: (key, selection, clickEvent) => {
+          // var spilted = [];
+          for (col = selection[0].start.col; col <= selection[0].end.col; col++) {
+            LockColumns.push(col);
+            // LockColumns = spilted.join(',');
+          }
+        },
+        disabled: function () {
+          return isReadyonly == true;
+        }
+      },
+      "make_read_only_unlock": {
+        name: 'Unlock Columns',
+        callback: (key, selection, clickEvent) => {
+          var spilted = [];
+          for (col = selection[0].start.col; col <= selection[0].end.col; col++) {
+            var index = LockColumns.indexOf(col);
+            if (index !== -1) LockColumns.splice(index, 1);
+          }
+        },
+        disabled: function () {
+          return isReadyonly == true;
+        }
+      }
+    }
+
+
+    hotElement = document.getElementById('hot');
+    hotElementContainer = hotElement.parentNode;
+
+    var hotSettings = {
+      data: getData(),
+      licenseKey: 'non-commercial-and-evaluation',
+      // columns: [],
+      colHeaders: [],
+      colWidths: [],
+      columnHeaders: false,
+      autoColumnSize: true,
+      fixedRowsTop: 1,
+      fixedColumnsLeft: 0,
+      manualColumnFreeze: false,
+      manualRowResize: true,
+      manualColumnResize: true,
+      autoWrapRow: true,
+      filters: false,
+      className: 'htCenter htMiddle',
+      bindRowsWithHeaders: true,
+      outsideClickDeselects: true,
+      rowHeights: 30,
+      wordWrap: true,
+      minSpareRows: 0,
+      columnSorting: false,
+      sortIndicator: true,
+      // readOnly: isReadyonly,
+      // beforeChange: beforeChange,
+      afterChange: afterChange,
+      headerTooltips: {
+        rows: true,
+        columns: true,
+        onlyTrimmed: false
+      },
+      rowHeaders: function (i) {
+        if (i !== 0) {
+          return i
+        } else {
+          return ''
+        }
+      },
+      afterContextMenuShow: function () {
+        allocateBOMItems.splice(1, 15);
+        // selectedItemCode = window.location.search.split('=')[1];
+        url = endPointURL + 'api/BOM/GetAllocateBom?drgNo=' + selectedDrawingno;
+        var api_url = url;
+        $.ajax({
+          url: api_url,
+          contentType: "application/json",
+          dataType: 'json',
+          success: function (result) {
+            console.log(result);
+            for (var i = 0; i < result.length; i++) {
+              var subBOM = result[i].DrawingNo;
+              var obj = {
+                key: "subbom:" + subBOM,
+                name: subBOM,
+                hidden: true,
+                callback: function (hot, key, options) {
+                  var t = allocateBOMAction(hot.split('subbom:')[1]);
+                }
+              }
+              allocateBOMItems.push(obj);
+            }
+          }
+        });
+      },
+      afterCreateRow: function (index) {
+        hotSettings.data[index][dataObjectKeys.length - 1] = '2';
+      },
+      beforeRemoveRow: function (index, amount, source) {
+        source.forEach(function (key, i) {
+          if (hotSettings.data[key][dataObjectKeys.length - 1] != 2) {
+            hotSettings.data[key][dataObjectKeys.length - 1] = '3';
+            deletedSourceObjects.push(hotSettings.data[key]);
+          }
+        })
+      },
+      afterOnCellMouseDown: function (e, coords, TD) {
+        // For Context Menu Items Dynamically Disabled
+
+        if (isReadyonly == true) {
+          return false;
+        }
+
+        activeIndexOfCol = coords.col;
+        activeIndexOfRow = coords.row;
+
+        activeIndexOfCol == -1 ? localStorage.setItem("SelectedBOMItemRow", JSON.stringify(activeIndexOfRow)) : localStorage.removeItem('SelectedBOMItemRow');
+
+        if (coords.row < 0) {
+          HeaderRenameCoords = coords;
+          HeaderRenameCoordsTH = TD;
+          items.change_column_title.disabled = false;
+        } else if (coords.row === 0) {
+          // items.row_below.disabled = true;
+          items.remove_row.disabled = true;
+          items.make_read_only_lock.disabled = true;
+          items.make_read_only_unlock.disabled = true;
+          items.change_column_title.disabled = true;
+        } else {
+          items.row_below.disabled = false;
+          items.remove_row.disabled = false;
+          items.make_read_only_lock.disabled = false;
+          items.make_read_only_unlock.disabled = false;
+          items.change_column_title.disabled = true;
+        }
+
+        if (coords.col === 4) {
+          items.font_italic.disabled = false;
+          items.font_underline.disabled = false;
+          items.font_bold.disabled = false;
+          items.font_normal.disabled = false;
+        } else {
+          items.font_italic.disabled = true;
+          items.font_underline.disabled = true;
+          items.font_bold.disabled = true;
+          items.font_normal.disabled = true;
+        }
+
+        if (coords.col > 6 && coords.col < (hot.countCols() - 3)) {
+          items.remove_col.disabled = false;
+        } else {
+          items.remove_col.disabled = true;
+        }
+
+        //  If S.No is NULL Disable the Row
+        if (coords.row != 0) {
+          var activeSno = hot.getDataAtCell(coords.row, 0)
+          for (var i = 0; i < this.countCols(); i++) {
+            var meta = this.getCellMeta(coords.row, i);
+            if (activeSno) { // if (this.colToProp(i) === 'available')
+              meta.className = (meta.className + '').replace('highlightCell', '').trim();
+              meta.readOnly = false;
+            }
+            else if (!activeSno && i != 0) {
+              meta.className = meta.className + '.handsontable .htDimmed';
+              meta.readOnly = true;
+            }
+          }
+        }
+
+        hot.render();
+      },
+      cells: function (row, col, prop) {
+
+        if (hotSettings.data != undefined) {
+
+          var cellPrp = {};
+
+          // if (isLockColumns == true) {
+          //   var selected = hot.getSelected();
+
+          //   for (var index = 0; index < selected.length; index += 1) {
+          //     var item = selected[index];
+          //     var startRow = Math.min(item[0], item[2]);
+          //     var endRow = Math.max(item[0], item[2]);
+          //     var startCol = Math.min(item[1], item[3]);
+          //     var endCol = Math.max(item[1], item[3]);
+
+          //     for (var rowIndex = startRow; rowIndex <= endRow; rowIndex += 1) {
+          //       for (var columnIndex = startCol; columnIndex <= endCol; columnIndex += 1) {
+
+          //         if (col == columnIndex && row == rowIndex) {
+          //           // hot.setCellMeta(rowIndex, columnIndex, 'className', 'pointerNone');
+          //           cellPrp.readOnly = true;
+          //           // cellPrp.renderer = ReadOnlyRenderer;
+          //         }
+          //       }
+          //     }
+          //   }
+          //   // hot.render();
+          // }
+
+
+          if (LockColumns.indexOf(col) != -1) {
+            cellPrp.readOnly = true;
+            cellPrp.renderer = ReadOnlyRenderer;
+          }
+
+          // Nested header readonly / Bg Color  for without Calc
+          if (row === 0) {
+            cellPrp.className = 'bgGrey'
+          }
+
+          if ([0].indexOf(row) !== -1 && [0, 1, 2, 3, 4, hot.countCols() - 1, hot.countCols() - 2, hot.countCols() - 3].indexOf(col) !== -1) {
+            cellPrp.readOnly = true;
+            cellPrp.renderer = ReadOnlyRenderer;
+          }
+
+          if ([4, hot.countCols() - 2].indexOf(col) != -1 && col != 3) {
+            cellPrp.readOnly = true;
+            cellPrp.renderer = ReadOnlyRenderer;
+          }
+
+          // For Bought Out DESC Cell Color Dynamically
+          if (row != 0 && col === 4 && hotSettings.data[row][dataObjectKeys.length - 3] == 'Bought Out') {
+            cellPrp.className = 'fontBlue';
+            // cellPrp.renderer = FontBlueRenderer;
+          }
+
+          // For DESC Cell (Bold/Italic/Underline) Dynamically
+          if (col === 4 && hotSettings.data[row][dataObjectKeys.length - 2] === '105') {
+            cellPrp.renderer = UnderlineRenderer;
+          }
+          else if (col === 4 && hotSettings.data[row][dataObjectKeys.length - 2] === '205') {
+            cellPrp.renderer = ItalicRenderer;
+          }
+          else if (col === 4 && hotSettings.data[row][dataObjectKeys.length - 2] === '305') {
+            cellPrp.renderer = BoldRenderer;
+          }
+          else if (col === 4 && hotSettings.data[row][dataObjectKeys.length - 2] === '405') {
+            cellPrp.renderer = NormalFontRenderer;
+          }
+          else if ((col === 4) && (hotSettings.data[row][dataObjectKeys.length - 2] === '105205')) {
+            cellPrp.renderer = UnderlineItalicRenderer;
+          }
+          else if ((col === 4) && (hotSettings.data[row][dataObjectKeys.length - 2] === '105305')) {
+            cellPrp.renderer = UnderlineBoldRenderer;
+          }
+          else if ((col === 4) && (hotSettings.data[row][dataObjectKeys.length - 2] === '205305')) {
+            cellPrp.renderer = BoldItalicRenderer;
+          }
+          else if ((col === 4) && (hotSettings.data[row][dataObjectKeys.length - 2] === '105205305')) {
+            cellPrp.renderer = UnderlineItalicBoldRenderer;
+          }
+
+          // // set Background Header Color
+          // if (hotSettings.data[row][0] === 'S1') {
+          //   cellPrp.renderer = RowHeaderRenderer;
+          // }
+
+          if (([0].indexOf(col) != -1) && (hotSettings.data[col] == "" || hotSettings.data[col] == undefined)) {
+            cellPrp.readOnly = true;
+            cellPrp.renderer = ReadOnlyRenderer;
+          }
+
+          //Set All Cells Read Only
+          if (isReadyonly == true) {
+            cellPrp.editor = false;
+            // hot.render();
+          } else {
+            cellPrp.editor = 'text';
+          }
+          return cellPrp;
+        }
+      },
+      afterBeginEditing(row, column) {
+        const cell = this.getCell(row, column)
+        const editor = this.getActiveEditor().TEXTAREA
+        editor.className = 'handsontableInput ' + cell.className;
+        hot.render();
+      },
+      contextMenu: {
+        items: items,
+        callback: function (key, selection, clickEvent) {
+          console.log(key, selection, clickEvent);
+        }
+      },
+      afterColumnResize: function (colIndex, newWidth, isDoubleClick) {
+        hotSettings.colWidths[colIndex] = newWidth;
+      },
+      afterSelection: function (changes, source) {
+      },
+      afterSelectionEnd: function (changes, source) {
+      },
+      afterContextMenuHide: function () {
+      },
+      afterCreateCol: function (i) {
+      },
+      afterRemoveCol: function (changes, source) {
+      },
+      afterRowResize: function (rowIndex, newWidth, isDoubleClick) {
+      },
+      onBeforeChange: function (data) {
+      },
+      afterGetColHeader: function (col, TH) {
+      },
+      // copyPaste: true,
+      // copyPaste: {
+      //   columnsLimit: 25,
+      //   rowsLimit: 50,
+      //   pasteMode: 'shift_down',
+      // },
+      beforePaste: function (data, coords) {
+        // if (IsPasteXL == true) {
+        if (data[0].length > hot.countCols() - 3) {
+          showNotify("Error", "Source columns format is not matching with the BOM format...", "error");
+        }
+        else {
+          var fromRowIndex = hot.countRows();
+          hot.alter('insert_row', fromRowIndex, data.length);
+          var index = fromRowIndex;
+
+          data.forEach(function (key, i) {
+            for (col = 0; col < hot.countCols() - 3; col++) {
+              hotSettings.data[index][col] = data[i][col];
+            }
+
+            hot.loadData(hotSettings.data);
+
+            if (hotSettings.data[index][3]) {
+              // hot.setDataAtCell(index, 3, hotSettings.data[index][3])
+              var params = '?validString=' + hotSettings.data[index][3] + '&indexColumn=' + 3;
+              url = endPointURL + 'api/BOM/GetBomItemElements' + params;
+              var api_url = url;
+              $.ajax({
+                async: false,
+                url: api_url,
+                contentType: "application/json",
+                dataType: 'json',
+                success: function (result) {
+                  var activeRowDetails = result;
+                  hotSettings.data[index][2] = activeRowDetails.DrawingNo;
+                  hotSettings.data[index][unitColIndex] = activeRowDetails.MeasurementUnit;
+                  hotSettings.data[index][4] = activeRowDetails.ShortDescription;
+                  hotSettings.data[index][dataObjectKeys.length - 3] = activeRowDetails.ItemType;
+                  hot.loadData(hotSettings.data);
+                },
+                error: function (result, status, request) {
+                  // showNotify("Error", "Invalid itemcode found...", "error");
+                  // return false;
+                }
+              });
+            }
+            else if (hotSettings.data[index][2]) {
+              hot.setDataAtCell(index, 2, hotSettings.data[index][2])
+            }
+
+            index = index + 1;
+          });
+        }
+        showNotify("Information", "New items updated successfully...", "info");
+        return false;
+        // }
+        // IsPasteXL == false;
+      },
+      afterPaste: function (data, coords) {
+      },
+
+    };
+
+    function afterChange(changes, source) {
+      if (source === 'loadData' || changes.length > 1) {
+        return;
+      }
+      if (source === 'edit' || source === 'paste') {
+
+        activeIndexOfCol = changes[0][1];
+        activeIndexOfRow = changes[0][0];
+        activeCellValue = changes[0][3];
+        activeCellOldValue = changes[0][2];
+        unitColIndex = this.countCols() - 3;
+        ttlQtyColIndex = this.countCols() - 2;
+        lastColIndex = this.countCols();
+        // hotSettings.data = hot.getData();
+
+        // Find Duplicates ItemCode
+        var duplicateFound = false;
+        if (activeIndexOfCol == 3 && activeCellOldValue != activeCellValue) {
+          for (var row = 1; row < hot.countRows(); row++) {
+            if (row != activeIndexOfRow) {
+              for (var col = activeIndexOfCol; col == activeIndexOfCol; col++) {
+                if (hot.getData()[row][col] == activeCellValue) {
+                  showNotify("Warning", "Duplicate itemcode found...", "warning");
+                  duplicateFound = true;
+                }
+              }
+              if (duplicateFound)
+                break
+            }
+          }
+        }
+
+        // // Check CheckNegativeBOM Values
+        // if (activeIndexOfCol == 3) {
+        //   Cdrg = activeCellValue.substring(3, 4);
+        //   xPt = activeCellValue.substring(1, 3);
+        // } else {
+        //   Cdrg = hotSettings.data[activeIndexOfRow][3].substring(2, 3);
+        //   xPt = hotSettings.data[activeIndexOfRow][3].substring(0, 2);
+        // }
+
+        // if ((Cdrg == 6 || Cdrg == 9) && (xPt < 91)) {
+        //   if ((activeIndexOfCol > 4 && activeIndexOfCol < (hot.countCols() - 3))) {
+        //     if (hotSettings.data[activeIndexOfRow][hot.countCols() - 2] < 0) {
+        //       showNotify("Warning", "Negative quantity for BOM not allowed...", "warning");
+        //       hot.setDataAtCell(activeIndexOfRow, activeIndexOfCol, '');
+        //       return false;
+        //     }
+        //   }
+        // } else { }
+
+
+
+        // For Get ItemCode/DrgNo Based Row Details,Description
+        if ((activeIndexOfCol === 2 || activeIndexOfCol === 3) && (activeCellOldValue != activeCellValue)) {
+          if (activeCellValue) {
+            var params = '?validString=' + activeCellValue + '&indexColumn=' + activeIndexOfCol;
+            url = endPointURL + 'api/BOM/GetBomItemElements' + params;
+            var api_url = url;
+            $.ajax({
+              async: false,
+              url: api_url,
+              contentType: "application/json",
+              dataType: 'json',
+              success: function (result) {
+                var activeRowDetails = result;
+                hotSettings.data[activeIndexOfRow][2] = activeRowDetails.DrawingNo;
+                hotSettings.data[activeIndexOfRow][3] = activeRowDetails.ItemCode;
+                hotSettings.data[activeIndexOfRow][unitColIndex] = activeRowDetails.MeasurementUnit;
+                hotSettings.data[activeIndexOfRow][4] = activeRowDetails.ShortDescription;
+                hotSettings.data[activeIndexOfRow][dataObjectKeys.length - 3] = activeRowDetails.ItemType;
+                hot.loadData(hotSettings.data);
+              },
+              error: function (result, status, request) {
+                hotSettings.data[activeIndexOfRow][2] = "";
+                hotSettings.data[activeIndexOfRow][3] = "";
+                hotSettings.data[activeIndexOfRow][unitColIndex] = "";
+                hotSettings.data[activeIndexOfRow][4] = "";
+                hotSettings.data[activeIndexOfRow][dataObjectKeys.length - 3] = "";
+                hot.loadData(hotSettings.data);
+              }
+            });
+          }
+        }
+
+        // Get Total Qty SUM Calc
+        if (activeIndexOfCol > 4 && activeIndexOfCol < (this.countCols() - 3)) {
+          var rowTotal;
+          var col;
+          var row;
+          var arrayOfMultiplier = hot.getData()[0];
+
+          if (activeIndexOfRow === 0) {
+            for (row = 1; row < hot.countRows(); row++) {
+              rowTotal = 0;
+              for (col = 5; col < hot.countCols() - 3; col++) {
+                var tot = arrayOfMultiplier[col] * hot.getData()[row][col];
+                rowTotal = rowTotal + tot;
+              }
+              hotSettings.data[activeIndexOfRow][dataObjectKeys.length - 1] == 2 ? '' : hotSettings.data[activeIndexOfRow][dataObjectKeys.length - 1] = '1'; // Update Action Value
+              hotSettings.data[row][(this.countCols() - 2)] = Math.round(rowTotal);
+            }
+          }
+
+          if (activeIndexOfRow != 0) {
+            rowTotal = 0;
+            for (col = 5; col < hot.countCols() - 3; col++) {
+              var tot = arrayOfMultiplier[col] * hot.getData()[activeIndexOfRow][col];
+              rowTotal = rowTotal + tot;
+            }
+            hotSettings.data[activeIndexOfRow][dataObjectKeys.length - 1] == 2 ? '' : hotSettings.data[activeIndexOfRow][dataObjectKeys.length - 1] = '1'; // Update Action Value
+            hotSettings.data[activeIndexOfRow][(this.countCols() - 2)] = Math.round(rowTotal); //parseFloat(rowTotal).toFixed(2);
+          }
+          hot.loadData(hotSettings.data);
+        }
+
+        // Set or Update Action Field Value when value is changed Eg:- update or new
+        if (activeIndexOfRow != 0) {
+          if ((hotSettings.data[activeIndexOfRow][dataObjectKeys.length - 1] == 0) && (activeCellOldValue != activeCellValue)) {
+            hotSettings.data[activeIndexOfRow][dataObjectKeys.length - 1] = '1';
+          }
+          else if (hotSettings.data[activeIndexOfRow][dataObjectKeys.length - 1] == undefined) {
+            hotSettings.data[activeIndexOfRow][dataObjectKeys.length - 1] = '2';
+          }
+        }
+
+      }
+
+      // if (source !== 'loadData' && source !== 'afterChange') {
+      //   changes.forEach(function (cellchanges) {
+      //     var row = cellchanges[0];
+      //     var col = hot.propToCol(cellchanges[1]);
+      //     hot.getCellMeta(row, col).renderer = textHasChangedRenderer;
+      //   });
+      // }
+    }
+
+    $("#btnSave").click(function () {
+      // $("#hot").toggle();
+      localStorage.setItem("isLoadingBOMItem", JSON.stringify(true));
+      selectedItemCode = window.location.search.split('=')[1];
+      // Set Added New Colum MQTY's
+      SupportHeaderDetails.MQTY = hotSettings.data[0].join("*");
+      SupportHeaderDetails.MQTY = " *".concat(SupportHeaderDetails.MQTY);
+
+      // Convert Array of Array to Array Of Object data's
+      updatedDataObject = hotSettings.data.map(function (e) {
+        var obj = {};
+        dataObjectKeys.forEach(function (key, i) {
+          obj[key] = e[i];
+        });
+        return obj;
+      });
+
+      // Convert Deleted Array of Array data to Array Of Object data's
+      deletedSourceObjects = deletedSourceObjects.map(function (e) {
+        var obj = {};
+        dataObjectKeys.forEach(function (key, i) {
+          obj[key] = e[i];
+        });
+        return obj;
+      });
+
+      updatedDataObject.splice(0, 1); //Slice the 0th index object
+
+      updatedDataObject.forEach(function (key, i) {
+        updatedDataObject[i].NewSlNo = i + 1;
+        updatedDataObject[i].Action != undefined || updatedDataObject[i].Action != '' ? '' : updatedDataObject[i].Action = '2'; // Update Action Field Value when new row is inserted Eg:- update/new/
+      });
+
+      // Set Added New Colums Count
+      var newColCount = 0;
+      for (col = 7; col < hot.countCols() - 3; col++) {
+        newColCount++;
+      }
+      SupportHeaderDetails.COLS = newColCount;
+
+      // Set Added New Colum Name's
+      SupportHeaderDetails.FmString = hotSettings.colHeaders.join("\t");
+
+      // Set Updated Colums width dynamically
+      SupportHeaderDetails.ColWidth = hotSettings.colWidths.join("* ");
+
+      //Join the two Array(Deleted Array of Object) of Objects
+      updatedDataObject = [...updatedDataObject, ...deletedSourceObjects];
+
+      postFormatFlex();
+
+      var params = '?ItemCode=' + selectedItemCode + '&state=update';
+      url = endPointURL + 'api/BOM/SaveBomItem' + params;
+      var api_url = url;
+      $.ajax({
+        type: "POST",
+        url: api_url,
+        data: JSON.stringify(updatedDataObject),
+        contentType: "application/json; charset=utf-8",
+        // data: JSON.stringify({ Itemlist: updatedDataObject }),
+        dataType: "json",
+
+        success: function (result) {
+          isReadyonly = true;
+        },
+        error: function (result) {
+          showNotify("Error", "Save could not completed.", "error");
+          localStorage.removeItem('isLoadingBOMItem');
+        },
+        complete: function () {
+          showNotify("Success", "Items saved successfully...", "success");
+          localStorage.removeItem('isLoadingBOMItem');
+          location.reload();
+        }
+      });
+
+
+    });
+
+    function postFormatFlex() {
+      url = endPointURL + 'api/BOM/updateFormatFlex?userId=' + currentUserName + '&BomNo=' + selectedDrawingno;
+      var api_url = url;
+      $.ajax({
+        type: "PUT",
+        url: api_url,
+        data: JSON.stringify(SupportHeaderDetails),
+        contentType: "application/json; charset=utf-8",
+        // traditional: true,
+        // data: JSON.stringify({ formatlist: SupportHeaderDetails }),
+        // dataType: "json",
+        success: function (result) {
+          // showNotify("Success", "Format Flex Stored successfully...", "success");
+          return;
+        },
+        error: function (result) {
+          showNotify("Error", "Save could not completed.", "error");
+        }
+      });
+
+    }
+
+    function getRowDetails() {
+      var params = '?validString=' + activeCellValue + '&indexColumn=' + activeIndexOfCol;
+      url = endPointURL + 'api/BOM/GetBomItemElements' + params;
+      var api_url = url;
+      $.ajax({
+        url: api_url,
+        contentType: "application/json",
+        dataType: 'json',
+        success: function (result) {
+          var activeRowDetails = result;
+        }
+      });
+    }
+
+    function allocateBOMAction(params) {
+      var bomLength = '';
+      var newColumnName = '';
+      var items = 1;
+      if (params === 'From Qty.Col#1 To Qty.Col#3') {
+        for (col = 5; col < hot.countCols() - 3; col++) {
+          if (allocateBOMItems.length > items) {
+            bomLength = allocateBOMItems[items].name.split('/')[1];
+            splitStr = selectedItemCode.substring(selectedItemCode.length, selectedItemCode.length - 3) + '/' + bomLength;
+            hotSettings.colHeaders[col].split(splitStr)[1] ? hotSettings.colHeaders[col] = hotSettings.colHeaders[col].split(splitStr)[1] : '';
+            newColumnName = selectedItemCode.substring(selectedItemCode.length, selectedItemCode.length - 3) + '/' + bomLength + hotSettings.colHeaders[col];
+            hotSettings.colHeaders[col] = newColumnName;
+            items++;
+          }
+        }
+      } else {
+        bomLength = params.split('/')[1];
+        newColumnName = selectedItemCode.substring(selectedItemCode.length, selectedItemCode.length - 3) + '/' + bomLength + 'New';
+        if (hotSettings.colHeaders[6] != hotSettings.colHeaders[hot.countCols() - 4])
+          hotSettings.colHeaders[hot.countCols() - 4] = newColumnName;
+      }
+      hot.render();
+    }
+
+    function getBOMSection() {
+      // var storedItems = [{ "SectionId": 1, "ItemNo": "1", "DrgNO": "", "ItemCode": "92015041", "ShortDescription": "ZINC COATED STEEL  SHEET : 0.65 X 1250 x 2500 (mm)", "Qantity": 0.27, "Remarks": "", "Unit": "NOS", "AddInsert": "" }, { "SectionId": 2, "ItemNo": "3", "DrgNO": "", "ItemCode": "92016002", "ShortDescription": "HOT ROLLED STEEL PLATE : 5 X 1250 X2500 (mm)", "Qantity": 0.166, "Remarks": "", "Unit": "NOS", "AddInsert": "" }, { "SectionId": 3, "ItemNo": "1", "DrgNO": "", "ItemCode": "92041012", "ShortDescription": "Ploycarbonate Sheet Transparent- 2 X 910 X 2440 - S9400015", "Qantity": 0.05, "Remarks": "", "Unit": "NOS", "AddInsert": "" }, { "SectionId": 5, "ItemNo": "1.1", "DrgNO": "", "ItemCode": "97010001", "ShortDescription": "PERSONAL COMPUTER", "Qantity": 1, "Remarks": "", "Unit": "NOS", "AddInsert": "" }, { "SectionId": 4, "ItemNo": "4.1", "DrgNO": "", "ItemCode": "92043558", "ShortDescription": "HEAT SHRINK SLEEVE OF RAYCHEM TYPE BPTM-50/20 A/U OR EQT.", "Qantity": 2.676, "Remarks": "", "Unit": "MTR", "AddInsert": "" }]
+      var storedItems = JSON.parse(localStorage.getItem("BOMSections"));
+      var markedItemPosition = JSON.parse(localStorage.getItem("MarkedItemPosition"));
+
+      setIntervalBOMSection = [];
+      localStorage.removeItem('BOMSections');
+
+      if (activeIndexOfRow) {
+        var storedItemsCopy = []
+        var sectionIDRef = "";
+        for (var i = 0; i < storedItems.length; i++) {
+
+          var secHeaderObj = { "SectionId": "", "ItemNo": "", "DrgNO": "", "ItemCode": "", "ShortDescription": "", "Qantity": 0, "Remarks": "", "Unit": "", "AddInsert": "" };
+
+          if (storedItems[i].SectionId != sectionIDRef) {
+            sectionIDRef = storedItems[i].SectionId;
+            if (storedItems[i].SectionId == 1) {
+              secHeaderObj.ItemNo = 'S' + storedItems[i].SectionId;
+              secHeaderObj.ShortDescription = 'ZINC COATED SHEET STEEL COATING 2.5 MICRONS';
+              storedItemsCopy.push(secHeaderObj);
+
+            } else if (storedItems[i].SectionId == 2) {
+              secHeaderObj.ItemNo = 'S' + storedItems[i].SectionId;
+              secHeaderObj.ShortDescription = 'HOT ROLLED MILD SHEET STEEL';
+              storedItemsCopy.push(secHeaderObj);
+            } else if (storedItems[i].SectionId == 3) {
+              secHeaderObj.ItemNo = 'S' + storedItems[i].SectionId;
+              secHeaderObj.ShortDescription = ' SPECIAL RAW MATERIAL REQUIREMENTS';
+              storedItemsCopy.push(secHeaderObj);
+            } else if (storedItems[i].SectionId == 4) {
+              secHeaderObj.ItemNo = 'S' + storedItems[i].SectionId;
+              secHeaderObj.ShortDescription = 'HEAT SHRINKABLE SLEEVE';
+              storedItemsCopy.push(secHeaderObj);
+            } else if (storedItems[i].SectionId == 5) {
+              secHeaderObj.ItemNo = 'S' + storedItems[i].SectionId;
+              secHeaderObj.ShortDescription = 'FIXED PARTS';
+              storedItemsCopy.push(secHeaderObj);
+            }
+          }
+          storedItemsCopy.push(storedItems[i]);
+        }
+
+        storedItems = storedItemsCopy;
+        if (markedItemPosition == -1) {
+          hot.alter('insert_row', activeIndexOfRow + 1, storedItems.length);
+          var index = activeIndexOfRow + 1;
+        } else {
+          hot.alter('insert_row', activeIndexOfRow, storedItems.length);
+          var index = activeIndexOfRow;
+        }
+        storedItems.forEach(function (key, i) {
+          hotSettings.data[index][0] = storedItems[i].ItemNo;
+          hotSettings.data[index][2] = storedItems[i].DrgNO;
+          hotSettings.data[index][3] = storedItems[i].ItemCode;
+          hotSettings.data[index][4] = storedItems[i].ShortDescription;
+          hotSettings.data[index][hot.countCols() - 1] = storedItems[i].Remarks;
+          hotSettings.data[index][hot.countCols() - 2] = storedItems[i].Qantity;
+          hotSettings.data[index][hot.countCols() - 3] = storedItems[i].Unit;
+          hot.loadData(hotSettings.data);
+          index = index + 1;
+        });
+      }
+    }
+
+    // $("#removeBOMSection").click(function () {
+    //   localStorage.removeItem('BOMSections');
+    // })
+
+    $("#btnRefresh").click(function () {
+      isReadyonly = true;
+      // $('#btnSave').prop('disabled', true);
+      // $('#btnModify').prop('disabled', false);
+      location.reload();
+      // getData();
+    })
+
+    $("#btnPasteXL").click(function () {
+      IsPasteXL = true;
+    })
+
+    $("#btnModify").click(function () {
+      isReadyonly = false;
+      $('#btnSave').prop('disabled', false);
+      $('#btnModify').prop('disabled', true);
+      hot.render();
+    })
+
+    $("#btnCancel").click(function () {
+      isReadyonly = true;
+      $('#btnSave').prop('disabled', true);
+      $('#btnModify').prop('disabled', false);
+      hot.render();
+    })
+
+    $("#testBtn").click(function () {
+      isReadyonly = true;
+      hot.updateSettings({
+        readOnly: true, // make table cells read-only
+        contextMenu: false, // disable context menu to change things
+        disableVisualSelection: true, // prevent user from visually selecting
+        manualColumnResize: false, // prevent dragging to resize columns
+        manualRowResize: false, // prevent dragging to resize rows
+        comments: false // prevent editing of comments
+      });
+      hot.render();
+    })
+
+    function hotTableRefresh() {
+      $("#loading").remove();
+      $("#hot").remove();
+      $("#handsonTable").append("<div id='hot'></div>");
+      hotElement = document.getElementById('hot');
+      hot = new Handsontable(hotElement, hotSettings);
+    }
+
+    var textHasChangedRenderer = function (instance, td, row, col, prop, value, cellProperties) {
+      Handsontable.renderers.TextRenderer.apply(this, arguments);
+      td.style.backgroundColor = '#cbd9e4';
+    };
+
+    var FontBlueRenderer = function (instance, td, row, col, prop, value, cellProperties) {
+      Handsontable.renderers.TextRenderer.apply(this, arguments);
+      td.style.color = 'darkblue';
+    };
+
+    var ReadOnlyRenderer = function (instance, td, row, col, prop, value, cellProperties) {
+      Handsontable.renderers.TextRenderer.apply(this, arguments);
+      td.style.backgroundColor = '#FBFBF9';
+    };
+
+    var BoldRenderer = function (instance, td, row, col, prop, value, cellProperties) {
+      Handsontable.renderers.TextRenderer.apply(this, arguments);
+      td.style.fontWeight = 'bold';
+      td.style.verticalAlign = 'middle';
+      td.style.textAlign = 'center';
+    };
+
+    var ItalicRenderer = function (instance, td, row, col, prop, value, cellProperties) {
+      Handsontable.renderers.TextRenderer.apply(this, arguments);
+      td.style.fontStyle = 'italic';
+      td.style.verticalAlign = 'middle';
+      td.style.textAlign = 'center';
+    };
+
+    var UnderlineRenderer = function (instance, td, row, col, prop, value, cellProperties) {
+      Handsontable.renderers.TextRenderer.apply(this, arguments);
+      td.style.textDecoration = 'underline';
+      td.style.verticalAlign = 'middle';
+      td.style.textAlign = 'center';
+    };
+
+    var UnderlineItalicRenderer = function (instance, td, row, col, prop, value, cellProperties) {
+      Handsontable.renderers.TextRenderer.apply(this, arguments);
+      td.style.textDecoration = 'underline';
+      td.style.fontStyle = 'italic';
+      td.style.verticalAlign = 'middle';
+      td.style.textAlign = 'center';
+    };
+
+    var UnderlineBoldRenderer = function (instance, td, row, col, prop, value, cellProperties) {
+      Handsontable.renderers.TextRenderer.apply(this, arguments);
+      td.style.textDecoration = 'underline';
+      td.style.fontWeight = 'bold';
+      td.style.verticalAlign = 'middle';
+      td.style.textAlign = 'center';
+    };
+
+    var BoldItalicRenderer = function (instance, td, row, col, prop, value, cellProperties) {
+      Handsontable.renderers.TextRenderer.apply(this, arguments);
+      td.style.fontWeight = 'bold';
+      td.style.fontStyle = 'italic';
+      td.style.verticalAlign = 'middle';
+      td.style.textAlign = 'center';
+    };
+
+    var UnderlineItalicBoldRenderer = function (instance, td, row, col, prop, value, cellProperties) {
+      Handsontable.renderers.TextRenderer.apply(this, arguments);
+      td.style.textDecoration = 'underline';
+      td.style.fontStyle = 'italic';
+      td.style.fontWeight = 'bold';
+      td.style.verticalAlign = 'middle';
+      td.style.textAlign = 'center';
+    };
+
+    var NormalFontRenderer = function (instance, td, row, col, prop, value, cellProperties) {
+      Handsontable.renderers.TextRenderer.apply(this, arguments);
+      td.style.fontWeight = 'normal';
+      td.style.fontStyle = 'normal';
+      td.style.textDecoration = 'none';
+      td.style.verticalAlign = 'middle';
+      td.style.textAlign = 'center';
+    };
+
+    hot = new Handsontable(hotElement, hotSettings);
+
+  </script>
+</body>
+
+</html>

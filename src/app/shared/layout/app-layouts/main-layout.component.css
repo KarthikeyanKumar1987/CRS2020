@@ -1,0 +1,15 @@
+.mainNav{
+    position:fixed !important;
+    height: 100% !important;
+    z-index: 2 !important;
+}
+.mainLay{
+    position: fixed !important;
+    z-index: 904 !important;
+    left: 100% !important;
+}
+.mainRibb{
+    position:fixed !important;
+    z-index:1 !important;
+    width:100% !important;
+}
